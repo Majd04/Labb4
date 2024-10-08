@@ -10,6 +10,9 @@ import javafx.geometry.Pos;
 import kth.controller.SudokuController;
 import kth.model.SudokuUtilities;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class BoardPane extends GridPane {
     private Label[][] numberTiles = new Label[9][9]; // UI elements
     private SudokuController controller;
@@ -119,7 +122,11 @@ public class BoardPane extends GridPane {
         // Clear button to reset the cell
         Button clearButton = new Button("C");
         clearButton.setPrefSize(50, 50);
-        clearButton.setOnAction(event -> controller.setSelectedNumber(0));  // Clear the selection
+        clearButton.setOnAction(event -> {
+
+
+                //controller.setSelectedNumber(0);  // Clear the selection
+                });
         panel.getChildren().add(clearButton);
 
         return panel;
@@ -158,6 +165,10 @@ public class BoardPane extends GridPane {
         Menu gameMenu = new Menu("Game");
         MenuItem newGame = new MenuItem("New game");
         MenuItem difficulty = new MenuItem("Change difficulty");
+
+        difficulty.setOnAction(event -> {
+        });
+
         gameMenu.getItems().addAll(newGame, difficulty);
 
         // Help-meny
@@ -165,13 +176,21 @@ public class BoardPane extends GridPane {
         MenuItem restart = new MenuItem("Restart game");
         MenuItem check = new MenuItem("Check if game is solved");
         MenuItem about = new MenuItem("About");
+
+        about.setOnAction(event -> {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("About");
+            alert.setHeaderText("How to play sudoku");
+            alert.setContentText("Sudoku is a puzzle where the goal is to fill the entire " +
+                    "grid with numbers 1 - 9. Each row, column and subgrid cannot contain " +
+                    "the same number more than once.");
+            alert.showAndWait();
+        });
+
         helpMenu.getItems().addAll(restart, check, about);
 
-
         // Lägg till menyn i menyraden
-        menuBar.getMenus().add(fileMenu);
-        menuBar.getMenus().add(gameMenu);
-        menuBar.getMenus().add(helpMenu);
+        menuBar.getMenus().addAll(fileMenu, gameMenu, helpMenu);
 
         // Här kan du lägga till fler menyer, t.ex. "Help"
         return menuBar;
