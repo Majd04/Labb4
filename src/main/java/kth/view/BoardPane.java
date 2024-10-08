@@ -157,8 +157,8 @@ public class BoardPane extends GridPane {
         // Game-meny
         Menu gameMenu = new Menu("Game");
         MenuItem newGame = new MenuItem("New game");
-        MenuItem resetGame = new MenuItem("Reset game");
-        gameMenu.getItems().addAll(newGame, resetGame);
+        MenuItem difficulty = new MenuItem("Change difficulty");
+        gameMenu.getItems().addAll(newGame, difficulty);
 
         // Help-meny
         Menu helpMenu = new Menu("Help");
