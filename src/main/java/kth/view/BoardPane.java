@@ -162,11 +162,16 @@ public class BoardPane extends GridPane {
 
         // Help-meny
         Menu helpMenu = new Menu("Help");
+        MenuItem restart = new MenuItem("Restart game");
+        MenuItem check = new MenuItem("Check if game is solved");
         MenuItem about = new MenuItem("About");
-        helpMenu.getItems().add(about);
+        helpMenu.getItems().addAll(restart, check, about);
+
 
         // Lägg till menyn i menyraden
         menuBar.getMenus().add(fileMenu);
+        menuBar.getMenus().add(gameMenu);
+        menuBar.getMenus().add(helpMenu);
 
         // Här kan du lägga till fler menyer, t.ex. "Help"
         return menuBar;
