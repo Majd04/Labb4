@@ -50,6 +50,7 @@ public class App extends Application {
         primaryStage.setTitle("Sudoku");
         primaryStage.show();
     }
+    //Testar att köra programmet
 
     public static void main(String[] args) {
         launch(args);  // Startar JavaFX-applikationen
