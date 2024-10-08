@@ -34,4 +34,31 @@ public class SudokuController {
     public SudokuBoard getSudokuBoard() {
         return sudokuBoard;
     }
+
+    // Metod för att kontrollera om lösningen är korrekt
+    public void checkSolution() {
+        // Kontrollera om Sudoku-brädet är löst
+        if (sudokuBoard.isSolved()) {
+            // Visa ett popup-meddelande som säger att spelet är löst
+            Alert solvedAlert = new Alert(Alert.AlertType.INFORMATION);
+            solvedAlert.setTitle("Sudoku Solved");
+            solvedAlert.setHeaderText(null);
+            solvedAlert.setContentText("Congratulations! You have solved the Sudoku puzzle!");
+            solvedAlert.showAndWait();
+        } else {
+            // Visa ett popup-meddelande som säger att lösningen är felaktig
+            Alert notSolvedAlert = new Alert(Alert.AlertType.ERROR);
+            notSolvedAlert.setTitle("Sudoku Not Solved");
+            notSolvedAlert.setHeaderText(null);
+            notSolvedAlert.setContentText("There are mistakes in the Sudoku puzzle. Please try again.");
+            notSolvedAlert.showAndWait();
+        }
+    }
+
+    // Metod för att ge en ledtråd till användaren
+    public void giveHint() {
+        // Här kan du implementera logiken för att ge en ledtråd
+        System.out.println("Giving a hint...");
+        // Uppdatera brädet med ledtråden
+    }
 }

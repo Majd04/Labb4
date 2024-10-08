@@ -1,7 +1,7 @@
 package kth.view;
 
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
+import javafx.geometry.Insets;
+import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
@@ -25,9 +25,14 @@ public class BoardPane extends GridPane {
         this.controller = controller;
     }
 
-    // Skapa rutnätet med svårighetsgraden från SudokuUtilities
     private void initializeBoard(String difficulty) {
         Font font = Font.font("Monospaced", FontWeight.NORMAL, 20);
+
+        // Huvud-GridPane för hela Sudoku-brädet
+        GridPane root = new GridPane();
+        root.setGridLinesVisible(false);  // Vi tar bort vanliga gridlines
+
+        root.setPadding(new Insets(35, 20, 0, 10));
 
         // Välj utgångsläget baserat på svårighetsgraden
         int[][] puzzle = null;
@@ -43,36 +48,54 @@ public class BoardPane extends GridPane {
                 break;
         }
 
-        // Skapa rutnätet baserat på det valda utgångsläget
-        for (int row = 0; row < 9; row++) {
-            for (int col = 0; col < 9; col++) {
-                int value = puzzle[row][col];
-                Label tile = new Label(value == 0 ? "" : String.valueOf(value));
-                tile.setPrefSize(50, 50);
-                tile.setFont(font);
-                tile.setAlignment(Pos.CENTER);
-                tile.setStyle("-fx-border-color: black; -fx-border-width: 0.5px;");
+        // Skapa 3x3-sektionerna
+        for (int sectionRow = 0; sectionRow < 3; sectionRow++) {
+            for (int sectionCol = 0; sectionCol < 3; sectionCol++) {
 
-                final int finalRow = row;
-                final int finalCol = col;
+                // Skapa en separat GridPane för varje 3x3-sektion
+                GridPane section = new GridPane();
+                section.setStyle("-fx-border-color: black; -fx-border-width: 3px;");
 
-                if (value != 0) {
-                    tile.setStyle("-fx-font-weight: bold; -fx-background-color: lightgray;");
-                    tile.setMouseTransparent(true);  // Gör rutan oåtkomlig
-                } else {
-                    // Event handler för redigerbara rutor
-                    tile.setOnMouseClicked(event -> {
-                        if (controller.getSelectedNumber() != 0) {
-                            tile.setText(String.valueOf(controller.getSelectedNumber()));
-                            controller.handleCellClick(finalRow, finalCol);
+                // Fyll varje 3x3-sektion med celler
+                for (int row = 0; row < 3; row++) {
+                    for (int col = 0; col < 3; col++) {
+                        int actualRow = sectionRow * 3 + row;
+                        int actualCol = sectionCol * 3 + col;
+                        int value = puzzle[actualRow][actualCol];
+
+                        Label tile = new Label(value == 0 ? "" : String.valueOf(value));
+                        tile.setPrefSize(50, 50);
+                        tile.setFont(font);
+                        tile.setAlignment(Pos.CENTER);
+                        tile.setStyle("-fx-border-color: black; -fx-border-width: 1px;");
+
+                        if (value != 0) {
+                            tile.setStyle(tile.getStyle() + "-fx-font-weight: bold; -fx-background-color: lightgray;");
+                            tile.setMouseTransparent(true);  // Gör rutan oåtkomlig
+                        } else {
+                            final int finalRow = actualRow;
+                            final int finalCol = actualCol;
+
+                            // Event handler för redigerbara rutor
+                            tile.setOnMouseClicked(event -> {
+                                if (controller.getSelectedNumber() != 0) {
+                                    tile.setText(String.valueOf(controller.getSelectedNumber()));
+                                    controller.handleCellClick(finalRow, finalCol);
+                                }
+                            });
                         }
-                    });
+
+                        // Lägg till cellen i 3x3-sektionen
+                        section.add(tile, col, row);
+                    }
                 }
 
-                numberTiles[row][col] = tile;
-                this.add(tile, col, row);  // Lägg till tile i GridPane
+                // Lägg till 3x3-sektionen i huvud-GridPane
+                root.add(section, sectionCol, sectionRow);
             }
         }
+
+        this.getChildren().add(root);  // Lägg till hela GridPane till scenen
     }
 
     // Return control panel for external usage
@@ -101,6 +124,54 @@ public class BoardPane extends GridPane {
 
         return panel;
     }
+
+    // Metod för att skapa knapparna "Check" och "Hint" till vänster
+    public VBox createLeftButtons(SudokuController controller) {
+        VBox vbox = new VBox();
+        vbox.setSpacing(10); // Avstånd mellan knapparna
+        vbox.setPadding(new javafx.geometry.Insets(10)); // Marginal runt knapparna
+
+        // Centrera knapparna i VBox
+        vbox.setAlignment(Pos.CENTER_LEFT);  // Centrera dem vertikalt till vänster
+
+        Button checkButton = new Button("Check");
+        checkButton.setOnAction(event -> controller.checkSolution());
+
+        Button hintButton = new Button("Hint");
+        hintButton.setOnAction(event -> controller.giveHint());
+
+        vbox.getChildren().addAll(checkButton, hintButton); // Lägg till knappar i VBox
+        return vbox;
+    }
+
+    public MenuBar createMenuBar() {
+        MenuBar menuBar = new MenuBar();
+
+        // File-meny
+        Menu fileMenu = new Menu("File");
+        MenuItem loadGame = new MenuItem("Load game");
+        MenuItem saveGame = new MenuItem("Save game");
+        MenuItem exit = new MenuItem("Exit");
+        fileMenu.getItems().addAll(loadGame, saveGame, exit);
+
+        // Game-meny
+        Menu gameMenu = new Menu("Game");
+        MenuItem newGame = new MenuItem("New game");
+        MenuItem resetGame = new MenuItem("Reset game");
+        gameMenu.getItems().addAll(newGame, resetGame);
+
+        // Help-meny
+        Menu helpMenu = new Menu("Help");
+        MenuItem about = new MenuItem("About");
+        helpMenu.getItems().add(about);
+
+        // Lägg till menyn i menyraden
+        menuBar.getMenus().add(fileMenu);
+
+        // Här kan du lägga till fler menyer, t.ex. "Help"
+        return menuBar;
+    }
+
 
     // Update the cell at (row, col) with a value from the model
     public void updateCell(int row, int col, int value) {
