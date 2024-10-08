@@ -50,6 +50,7 @@ public class App extends Application {
         primaryStage.setTitle("Sudoku");
         primaryStage.show();
     }
+    //testar git push
 
     public static void main(String[] args) {
         launch(args);  // Startar JavaFX-applikationen
