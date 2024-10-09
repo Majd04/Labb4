@@ -1,5 +1,6 @@
 package kth.view;
 
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
@@ -87,6 +88,9 @@ public class BoardPane extends GridPane {
                                 }
                             });
                         }
+
+                        // Store the reference in the `numberTiles` array
+                        numberTiles[actualRow][actualCol] = tile;
 
                         // Lägg till cellen i 3x3-sektionen
                         section.add(tile, col, row);
@@ -200,11 +204,23 @@ public class BoardPane extends GridPane {
 
 
     // Update the cell at (row, col) with a value from the model
-    public void updateCell(int row, int col, int value) {
-        if (value != 0) {
-            numberTiles[row][col].setText(String.valueOf(value));
-        } else {
-            numberTiles[row][col].setText("");
-        }
+    // Assuming you are using Label for the cells
+    public void updateCell(int row, int col, int value, boolean isHint) {
+        Platform.runLater(() -> {
+            if (numberTiles[row][col] != null) {
+                if (value != 0) {
+                    numberTiles[row][col].setText(String.valueOf(value));  // Update the value in the UI
+                    if (isHint) {
+                        // Disable the cell and change its style to indicate it's locked
+                        numberTiles[row][col].setDisable(true);  // Lock the cell (disable interactions)
+                        numberTiles[row][col].setStyle("-fx-background-color: lightgray; -fx-text-fill: black; -fx-border-color: black; -fx-alignment: center;");
+                    }
+                } else {
+                    numberTiles[row][col].setText("");  // Clear the cell if the value is 0
+                }
+            } else {
+                System.err.println("Error: numberTiles[" + row + "][" + col + "] is null!");
+            }
+        });
     }
 }
