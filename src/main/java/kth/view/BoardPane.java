@@ -127,6 +127,7 @@ public class BoardPane extends GridPane {
         Button clearButton = new Button("C");
         clearButton.setPrefSize(50, 50);
         clearButton.setOnAction(event -> {
+            controller.clearSelectedCell();  // Call the method in the controller to clear the selected cell
 
 
                 //controller.setSelectedNumber(0);  // Clear the selection

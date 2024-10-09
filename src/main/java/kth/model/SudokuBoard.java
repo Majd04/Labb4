@@ -32,16 +32,33 @@ public class SudokuBoard {
         return true;
     }
 
+    public boolean checkPartialSolution() {
+        for (int row = 0; row < 9; row++) {
+            for (int col = 0; col < 9; col++) {
+                int currentVal = board[row][col];  // Get the value from the current board
+                if (currentVal != 0) {  // Only check non-empty cells
+                    int correctVal = getSolutionVal(row, col);  // Get the correct solution value
+                    if (currentVal != correctVal) {
+                        System.out.println("Incorrect value at [" + row + "][" + col + "]: " +
+                                "Entered = " + currentVal + ", Correct = " + correctVal);
+                        return false;  // Return false if any filled value is incorrect
+                    }
+                }
+            }
+        }
+        return true;  // Return true if all filled values are correct
+    }
+
 
     public boolean allCellsFilled() {
         for (int row = 0; row < 9; row++) {
             for (int col = 0; col < 9; col++) {
-                if (board[row][col] == 0) {
-                    return false; // Det finns tomma celler
+                if (board[row][col] == 0) {  // Check for empty cells
+                    return false;  // Return false if there is at least one empty cell
                 }
             }
         }
-        return true; // Alla celler är ifyllda
+        return true;  // All cells are filled
     }
 
     public void printBoard() {

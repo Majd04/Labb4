@@ -12,6 +12,8 @@ public class SudokuController {
     private BoardPane boardPane;
     private int selectedNumber = 0;
     private Random random = new Random();  // For selecting random empty cells
+    private int selectedRow = -1;
+    private int selectedCol = -1;
 
 /*    public SudokuController(SudokuBoard board, BoardPane view) {
         this.sudokuBoard = board;
@@ -47,9 +49,27 @@ public class SudokuController {
 
     // Handle click on a Sudoku cell (row, col)
     public void handleCellClick(int row, int col) {
+        selectedRow = row;
+        selectedCol = col;
         if (selectedNumber != 0) {
             sudokuBoard.setCellVal(row, col, selectedNumber);  // Update model
             boardPane.updateCell(row, col, selectedNumber, false);    // Update view
+        }
+    }
+
+    // Metod för att rensa den valda cellen
+    public void clearSelectedCell() {
+        if (selectedRow != -1 && selectedCol != -1) {
+            // Rensa cellen i logiken (modell)
+            sudokuBoard.setCellVal(selectedRow, selectedCol, 0);  // Sätt värdet till 0 (tom cell)
+
+            // Uppdatera UI för att spegla ändringen
+            boardPane.updateCell(selectedRow, selectedCol, 0, false);  // Uppdatera grafiken i cellen
+
+            // Töm den valda cellen (logik och UI)
+            System.out.println("Cleared cell at [" + selectedRow + "][" + selectedCol + "]");
+        } else {
+            System.out.println("No cell selected to clear.");
         }
     }
 
@@ -58,25 +78,43 @@ public class SudokuController {
     }
 
     // Metod för att kontrollera om lösningen är korrekt
+    // Check the solution (full or partial)
     public void checkSolution() {
-        // Kontrollera om Sudoku-brädet är löst
-        if (sudokuBoard.isSolved()) {
-            // Visa ett popup-meddelande som säger att spelet är löst
-            Alert solvedAlert = new Alert(Alert.AlertType.INFORMATION);
-            solvedAlert.setTitle("Sudoku Solved");
-            solvedAlert.setHeaderText(null);
-            solvedAlert.setContentText("Congratulations! You have solved the Sudoku puzzle!");
-            solvedAlert.showAndWait();
+        // Check if the board is fully filled
+        if (sudokuBoard.allCellsFilled()) {
+            // If the board is fully filled, perform a full solution check
+            if (sudokuBoard.isSolved()) {
+                Alert solvedAlert = new Alert(Alert.AlertType.INFORMATION);
+                solvedAlert.setTitle("Sudoku Solved");
+                solvedAlert.setHeaderText(null);
+                solvedAlert.setContentText("Congratulations! You have solved the Sudoku puzzle!");
+                solvedAlert.showAndWait();
+            } else {
+                Alert notSolvedAlert = new Alert(Alert.AlertType.ERROR);
+                notSolvedAlert.setTitle("Sudoku Not Solved");
+                notSolvedAlert.setHeaderText(null);
+                notSolvedAlert.setContentText("There are mistakes in the Sudoku puzzle. Please try again.");
+                notSolvedAlert.showAndWait();
+
+                sudokuBoard.printBoard();  // Print the current and solution boards for debugging
+            }
         } else {
-            // Visa ett popup-meddelande som säger att lösningen är felaktig
-            Alert notSolvedAlert = new Alert(Alert.AlertType.ERROR);
-            notSolvedAlert.setTitle("Sudoku Not Solved");
-            notSolvedAlert.setHeaderText(null);
-            notSolvedAlert.setContentText("There are mistakes in the Sudoku puzzle. Please try again.");
-            notSolvedAlert.showAndWait();
+            // If the board is not fully filled, perform a partial solution check
+            if (sudokuBoard.checkPartialSolution()) {
+                Alert partialCorrectAlert = new Alert(Alert.AlertType.INFORMATION);
+                partialCorrectAlert.setTitle("Sudoku Progress");
+                partialCorrectAlert.setHeaderText(null);
+                partialCorrectAlert.setContentText("So far, everything is correct. Keep going!");
+                partialCorrectAlert.showAndWait();
+            } else {
+                Alert partialIncorrectAlert = new Alert(Alert.AlertType.ERROR);
+                partialIncorrectAlert.setTitle("Sudoku Mistakes");
+                partialIncorrectAlert.setHeaderText(null);
+                partialIncorrectAlert.setContentText("There are mistakes in your current solution. Please try again.");
+                partialIncorrectAlert.showAndWait();
 
-            sudokuBoard.printBoard();
-
+                sudokuBoard.printBoard();  // Print the current and solution boards for debugging
+            }
         }
     }
 
