@@ -187,6 +187,8 @@ public class BoardPane extends GridPane {
             alert.showAndWait();
         });
 
+        check.setOnAction(event -> {controller.checkSolution();});
+
         helpMenu.getItems().addAll(restart, check, about);
 
         // Lägg till menyn i menyraden
