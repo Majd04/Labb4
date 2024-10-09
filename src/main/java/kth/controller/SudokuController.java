@@ -5,10 +5,13 @@ import kth.model.SudokuBoard;
 import kth.model.SudokuUtilities;
 import kth.view.BoardPane;
 
+import java.util.Random;
+
 public class SudokuController {
     private SudokuBoard sudokuBoard;
     private BoardPane boardPane;
     private int selectedNumber = 0;
+    private Random random = new Random();  // For selecting random empty cells
 
 /*    public SudokuController(SudokuBoard board, BoardPane view) {
         this.sudokuBoard = board;
@@ -46,7 +49,7 @@ public class SudokuController {
     public void handleCellClick(int row, int col) {
         if (selectedNumber != 0) {
             sudokuBoard.setCellVal(row, col, selectedNumber);  // Update model
-            boardPane.updateCell(row, col, selectedNumber);    // Update view
+            boardPane.updateCell(row, col, selectedNumber, false);    // Update view
         }
     }
 
@@ -77,10 +80,21 @@ public class SudokuController {
         }
     }
 
-    // Metod för att ge en ledtråd till användaren
     public void giveHint() {
-        // Här kan du implementera logiken för att ge en ledtråd
-        System.out.println("Giving a hint...");
-        // Uppdatera brädet med ledtråden
+        int row, col;
+
+        // Find a random empty cell (i.e., one that has a 0 value)
+        do {
+            row = random.nextInt(9);  // Random row index (0-8)
+            col = random.nextInt(9);  // Random column index (0-8)
+        } while (sudokuBoard.getCellVal(row, col) != 0);  // Keep looking until we find an empty cell
+
+        // Get the correct value from the solution
+        int correctValue = sudokuBoard.getSolutionVal(row, col);
+
+        // Update the current board with the correct value
+        sudokuBoard.setCellVal(row, col, correctValue);  // Update model (logic board)
+        boardPane.updateCell(row, col, correctValue, true);    // Update view (UI)
+
     }
 }
