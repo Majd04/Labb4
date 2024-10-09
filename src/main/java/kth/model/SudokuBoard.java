@@ -6,11 +6,20 @@ import java.util.Set;
 public class SudokuBoard {
     private int[][] board;
     private int[][] boardSolution;
+    private int[][] initialBoard;
 
     public SudokuBoard(int[][] board, int[][] boardSolution) {
         //board = new int[9][9];
         this.board = board;
         this.boardSolution = boardSolution;
+
+        // Create a copy of the initial board to reset later
+        initialBoard = new int[9][9];
+        for (int row = 0; row < 9; row++) {
+            for (int col = 0; col < 9; col++) {
+                initialBoard[row][col] = board[row][col];  // Save the initial state
+            }
+        }
     }
 
     public void setCellVal(int row, int col, int val) {
@@ -30,6 +39,16 @@ public class SudokuBoard {
             }
         }
         return true;
+    }
+
+    // Method to reset the board to the initial state
+    public void resetBoard() {
+        for (int row = 0; row < 9; row++) {
+            for (int col = 0; col < 9; col++) {
+                board[row][col] = initialBoard[row][col];  // Reset each cell to the initial value
+            }
+        }
+        System.out.println("Board reset to the initial state.");
     }
 
     public boolean checkPartialSolution() {

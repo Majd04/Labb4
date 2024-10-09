@@ -192,6 +192,10 @@ public class BoardPane extends GridPane {
             alert.showAndWait();
         });
 
+        restart.setOnAction(event -> {
+            controller.restartGame();  // Call the restart method in the controller
+        });
+
         check.setOnAction(event -> {controller.checkSolution();});
 
         helpMenu.getItems().addAll(restart, check, about);
@@ -214,7 +218,7 @@ public class BoardPane extends GridPane {
                     if (isHint) {
                         // Disable the cell and change its style to indicate it's locked
                         numberTiles[row][col].setDisable(true);  // Lock the cell (disable interactions)
-                        numberTiles[row][col].setStyle("-fx-background-color: lightgray; -fx-text-fill: black; -fx-border-color: black; -fx-alignment: center;");
+                        numberTiles[row][col].setStyle("-fx-background-color: #ffffff; -fx-text-fill: black; -fx-border-color: black; -fx-alignment: center; ");
                     }
                 } else {
                     numberTiles[row][col].setText("");  // Clear the cell if the value is 0

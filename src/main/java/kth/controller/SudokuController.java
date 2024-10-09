@@ -57,6 +57,21 @@ public class SudokuController {
         }
     }
 
+    public void restartGame() {
+        // Reset the board to its initial state (model)
+        sudokuBoard.resetBoard();  // Assuming you have a reset method in SudokuBoard
+
+        // Reset the UI to reflect the initial state
+        for (int row = 0; row < 9; row++) {
+            for (int col = 0; col < 9; col++) {
+                int value = sudokuBoard.getCellVal(row, col);  // Get the reset value from the model
+                boardPane.updateCell(row, col, value, false);  // Update the UI with the reset values
+            }
+        }
+
+        System.out.println("Game restarted.");
+    }
+
     // Metod för att rensa den valda cellen
     public void clearSelectedCell() {
         if (selectedRow != -1 && selectedCol != -1) {
@@ -76,6 +91,8 @@ public class SudokuController {
     public SudokuBoard getSudokuBoard() {
         return sudokuBoard;
     }
+
+
 
     // Metod för att kontrollera om lösningen är korrekt
     // Check the solution (full or partial)
