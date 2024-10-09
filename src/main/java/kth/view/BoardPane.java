@@ -8,7 +8,9 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.geometry.Pos;
+import javafx.stage.Stage;
 import kth.controller.SudokuController;
+import kth.model.SudokuBoard;
 import kth.model.SudokuUtilities;
 
 import java.util.ArrayList;
@@ -130,8 +132,8 @@ public class BoardPane extends GridPane {
             controller.clearSelectedCell();  // Call the method in the controller to clear the selected cell
 
 
-                //controller.setSelectedNumber(0);  // Clear the selection
-                });
+            //controller.setSelectedNumber(0);  // Clear the selection
+        });
         panel.getChildren().add(clearButton);
 
         return panel;
@@ -156,7 +158,7 @@ public class BoardPane extends GridPane {
         return vbox;
     }
 
-    public MenuBar createMenuBar() {
+    public MenuBar createMenuBar(Stage stage) {
         MenuBar menuBar = new MenuBar();
 
         // File-meny
@@ -165,6 +167,14 @@ public class BoardPane extends GridPane {
         MenuItem saveGame = new MenuItem("Save game");
         MenuItem exit = new MenuItem("Exit");
         fileMenu.getItems().addAll(loadGame, saveGame, exit);
+
+        loadGame.setOnAction(event -> {
+            controller.loadGame(stage);
+        });
+        saveGame.setOnAction(event -> {
+            controller.saveGame(stage);  // Anropa controller för att spara spelet
+        });
+        exit.setOnAction(event -> Platform.exit());
 
         // Game-meny
         Menu gameMenu = new Menu("Game");
@@ -192,11 +202,9 @@ public class BoardPane extends GridPane {
             alert.showAndWait();
         });
 
-        restart.setOnAction(event -> {
-            controller.restartGame();  // Call the restart method in the controller
+        check.setOnAction(event -> {
+            controller.checkSolution();
         });
-
-        check.setOnAction(event -> {controller.checkSolution();});
 
         helpMenu.getItems().addAll(restart, check, about);
 
@@ -218,7 +226,7 @@ public class BoardPane extends GridPane {
                     if (isHint) {
                         // Disable the cell and change its style to indicate it's locked
                         numberTiles[row][col].setDisable(true);  // Lock the cell (disable interactions)
-                        numberTiles[row][col].setStyle("-fx-background-color: #ffffff; -fx-text-fill: black; -fx-border-color: black; -fx-alignment: center; ");
+                        numberTiles[row][col].setStyle("-fx-background-color: lightgray; -fx-text-fill: black; -fx-border-color: black; -fx-alignment: center;");
                     }
                 } else {
                     numberTiles[row][col].setText("");  // Clear the cell if the value is 0
@@ -227,5 +235,14 @@ public class BoardPane extends GridPane {
                 System.err.println("Error: numberTiles[" + row + "][" + col + "] is null!");
             }
         });
+    }
+
+    public void updateBoard(SudokuBoard board) {
+        for (int row = 0; row < 9; row++) {
+            for (int col = 0; col < 9; col++) {
+                int value = board.getCellVal(row, col);
+                updateCell(row, col, value, false);
+            }
+        }
     }
 }
