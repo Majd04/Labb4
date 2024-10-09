@@ -206,6 +206,10 @@ public class BoardPane extends GridPane {
             controller.checkSolution();
         });
 
+        restart.setOnAction(event -> {
+            controller.restartGame();  // Call the restart method in the controller
+        });
+
         helpMenu.getItems().addAll(restart, check, about);
 
         // Lägg till menyn i menyraden
