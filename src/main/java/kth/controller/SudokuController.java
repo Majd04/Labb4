@@ -2,6 +2,7 @@ package kth.controller;
 
 import javafx.scene.control.Alert;
 import kth.model.SudokuBoard;
+import kth.model.SudokuUtilities;
 import kth.view.BoardPane;
 
 public class SudokuController {
@@ -9,8 +10,26 @@ public class SudokuController {
     private BoardPane boardPane;
     private int selectedNumber = 0;
 
-    public SudokuController(SudokuBoard board, BoardPane view) {
+/*    public SudokuController(SudokuBoard board, BoardPane view) {
         this.sudokuBoard = board;
+        this.boardPane = view;
+    }*/
+
+    public SudokuController(SudokuBoard board, BoardPane view, SudokuUtilities.SudokuLevel level) {
+        // Använd SudokuUtilities för att generera pussel och lösning
+        int[][][] puzzleAndSolution = SudokuUtilities.generateSudokuMatrix(level);
+        int[][] puzzle = new int[9][9];
+        int[][] solution = new int[9][9];
+
+        // Dela upp i pussel och lösning
+        for (int row = 0; row < 9; row++) {
+            for (int col = 0; col < 9; col++) {
+                puzzle[row][col] = puzzleAndSolution[row][col][0];  // Olösta pusslet
+                solution[row][col] = puzzleAndSolution[row][col][1];  // Lösning
+            }
+        }
+
+        this.sudokuBoard = new SudokuBoard(puzzle, solution);
         this.boardPane = view;
     }
 
@@ -52,6 +71,9 @@ public class SudokuController {
             notSolvedAlert.setHeaderText(null);
             notSolvedAlert.setContentText("There are mistakes in the Sudoku puzzle. Please try again.");
             notSolvedAlert.showAndWait();
+
+            sudokuBoard.printBoard();
+
         }
     }
 

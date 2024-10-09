@@ -5,9 +5,12 @@ import java.util.Set;
 
 public class SudokuBoard {
     private int[][] board;
+    private int[][] boardSolution;
 
-    public SudokuBoard() {
-        board = new int[9][9];
+    public SudokuBoard(int[][] board, int[][] boardSolution) {
+        //board = new int[9][9];
+        this.board = board;
+        this.boardSolution = boardSolution;
     }
 
     public void setCellVal(int row, int col, int val) {
@@ -18,7 +21,19 @@ public class SudokuBoard {
         return board[row][col];
     }
 
+    public boolean isSolved() {
+        for (int row = 0; row < 9; row++) {
+            for (int col = 0; col < 9; col++) {
+                if (board[row][col] != boardSolution[row][col]) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
 
+
+/*
 
     public boolean isSolved() {
         if (!allCellsFilled()) {
@@ -64,6 +79,7 @@ public class SudokuBoard {
         return true;
     }
 
+
     private boolean checkBox(int boxRow, int boxCol) {
         Set<Integer> seen = new HashSet<>();
         for (int row = boxRow; row < boxRow + 3; row++) {
@@ -76,6 +92,7 @@ public class SudokuBoard {
         }
         return true;
     }
+*/
 
     public boolean allCellsFilled() {
         for (int row = 0; row < 9; row++) {
@@ -89,9 +106,25 @@ public class SudokuBoard {
     }
 
     public void printBoard() {
+/*        for (int row = 0; row < 9; row++) {
+            for (int col = 0; col < 9; col++) {
+                System.out.print(board[row][col] + " ");
+            }
+            System.out.println();
+        }*/
+
+        System.out.println("Current Board:");
         for (int row = 0; row < 9; row++) {
             for (int col = 0; col < 9; col++) {
                 System.out.print(board[row][col] + " ");
+            }
+            System.out.println();
+        }
+
+        System.out.println("Solution Board:");
+        for (int row = 0; row < 9; row++) {
+            for (int col = 0; col < 9; col++) {
+                System.out.print(boardSolution[row][col] + " ");
             }
             System.out.println();
         }
