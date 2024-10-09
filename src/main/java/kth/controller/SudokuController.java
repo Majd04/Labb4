@@ -1,10 +1,15 @@
 package kth.controller;
 
 import javafx.scene.control.Alert;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
+import kth.io.SudokuFileIO;
 import kth.model.SudokuBoard;
 import kth.model.SudokuUtilities;
 import kth.view.BoardPane;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Random;
 
 public class SudokuController {
@@ -134,5 +139,36 @@ public class SudokuController {
         sudokuBoard.setCellVal(row, col, correctValue);  // Update model (logic board)
         boardPane.updateCell(row, col, correctValue, true);    // Update view (UI)
 
+    }
+
+    public void saveGame(Stage stage) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Save Sudoku Game");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Sudoku Files", "*.sudoku"));
+
+        File file = fileChooser.showSaveDialog(stage);
+        if (file != null) {
+            try {
+                SudokuFileIO.serializeToFile(sudokuBoard, file);
+            } catch (IOException e) {
+                e.printStackTrace();  // Hantera fel
+            }
+        }
+    }
+
+    public void loadGame(Stage stage) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Open Sudoku Game");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Sudoku Files", "*.sudoku"));
+
+        File file = fileChooser.showOpenDialog(stage);
+        if (file != null) {
+            try {
+                sudokuBoard = SudokuFileIO.deSerializeFromFile(file);
+                boardPane.updateBoard(sudokuBoard);  // Uppdatera vyn med laddat bräde
+            } catch (IOException | ClassNotFoundException e) {
+                e.printStackTrace();  // Hantera fel
+            }
+        }
     }
 }

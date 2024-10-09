@@ -1,9 +1,10 @@
 package kth.model;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
-public class SudokuBoard {
+public class SudokuBoard implements Serializable {
     private int[][] board;
     private int[][] boardSolution;
 

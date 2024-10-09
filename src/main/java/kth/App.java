@@ -84,7 +84,7 @@ public class App extends Application {
         VBox leftButtons = boardPane.createLeftButtons(controller);
 
         // Skapa en menyrad (MenuBar) överst
-        MenuBar menuBar = boardPane.createMenuBar();
+        MenuBar menuBar = boardPane.createMenuBar(primaryStage);
 
         // Skapa layout och scen
         BorderPane root = new BorderPane();
