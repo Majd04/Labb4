@@ -43,6 +43,29 @@ public class SudokuController {
         this.boardPane = view;
     }
 
+    public void changeDifficulty(SudokuUtilities.SudokuLevel level) {
+        // Generate a new puzzle and solution for the selected difficulty
+        int[][][] puzzleAndSolution = SudokuUtilities.generateSudokuMatrix(level);
+        int[][] puzzle = new int[9][9];
+        int[][] solution = new int[9][9];
+
+        // Split into puzzle and solution
+        for (int row = 0; row < 9; row++) {
+            for (int col = 0; col < 9; col++) {
+                puzzle[row][col] = puzzleAndSolution[row][col][0];  // Puzzle part
+                solution[row][col] = puzzleAndSolution[row][col][1];  // Solution part
+            }
+        }
+
+        // Update the model (SudokuBoard)
+        this.sudokuBoard = new SudokuBoard(puzzle, solution);
+
+        // Update the view (BoardPane) with the new puzzle
+        boardPane.updateBoard(sudokuBoard);  // Update the UI with the new puzzle
+
+        System.out.println("Difficulty changed to " + level);
+    }
+
     // Set the currently selected number
     public void setSelectedNumber(int number) {
         this.selectedNumber = number;

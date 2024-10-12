@@ -32,6 +32,7 @@ public class BoardPane extends GridPane {
     }
 
     private void initializeBoard(String difficulty) {
+        this.getChildren().clear();  // Remove all current children from the root GridPane
         Font font = Font.font("Monospaced", FontWeight.NORMAL, 20);
 
         // Huvud-GridPane för hela Sudoku-brädet
@@ -179,12 +180,21 @@ public class BoardPane extends GridPane {
         // Game-meny
         Menu gameMenu = new Menu("Game");
         MenuItem newGame = new MenuItem("New game");
-        MenuItem difficulty = new MenuItem("Change difficulty");
+        MenuItem easy = new MenuItem("Easy");
+        MenuItem medium = new MenuItem("Medium");
+        MenuItem hard = new MenuItem("Hard");
 
-        difficulty.setOnAction(event -> {
+        easy.setOnAction(event -> {
+            initializeBoard("easy");
+        });
+        medium.setOnAction(event -> {
+            initializeBoard("medium");
+        });
+        hard.setOnAction(event -> {
+            initializeBoard("hard");
         });
 
-        gameMenu.getItems().addAll(newGame, difficulty);
+        gameMenu.getItems().addAll(newGame, easy, medium, hard);
 
         // Help-meny
         Menu helpMenu = new Menu("Help");
