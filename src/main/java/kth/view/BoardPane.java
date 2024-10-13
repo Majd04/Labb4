@@ -20,8 +20,9 @@ public class BoardPane extends GridPane {
     private Label[][] numberTiles = new Label[9][9]; // UI elements
     private SudokuController controller;
     private VBox controlPanel;
+    private SudokuBoard sudokuBoard;
 
-    public BoardPane(String difficulty) {
+    public BoardPane(SudokuUtilities.SudokuLevel difficulty) {
         initializeBoard(difficulty);  // Set up the board UI
         controlPanel = initializeControlPanel();  // Create the control panel with buttons 1-9 and clear button
     }
@@ -31,8 +32,15 @@ public class BoardPane extends GridPane {
         this.controller = controller;
     }
 
-    private void initializeBoard(String difficulty) {
+    private void initializeBoard(SudokuUtilities.SudokuLevel difficulty) {
         this.getChildren().clear();  // Remove all current children from the root GridPane
+        // Reset the numberTiles array (UI elements)
+        for (int row = 0; row < 9; row++) {
+            for (int col = 0; col < 9; col++) {
+                numberTiles[row][col] = null;  // Clear the references to the previous tiles
+            }
+        }
+
         Font font = Font.font("Monospaced", FontWeight.NORMAL, 20);
 
         // Huvud-GridPane för hela Sudoku-brädet
@@ -44,13 +52,13 @@ public class BoardPane extends GridPane {
         // Välj utgångsläget baserat på svårighetsgraden
         int[][] puzzle = null;
         switch (difficulty) {
-            case "easy":
+            case EASY:
                 puzzle = SudokuUtilities.getEasyPuzzle();
                 break;
-            case "medium":
+            case MEDIUM:
                 puzzle = SudokuUtilities.getMediumPuzzle();
                 break;
-            case "hard":
+            case HARD:
                 puzzle = SudokuUtilities.getHardPuzzle();
                 break;
         }
@@ -185,13 +193,16 @@ public class BoardPane extends GridPane {
         MenuItem hard = new MenuItem("Hard");
 
         easy.setOnAction(event -> {
-            initializeBoard("easy");
+            initializeBoard(SudokuUtilities.SudokuLevel.EASY);
+            controller.setDifficulty(SudokuUtilities.SudokuLevel.EASY);
         });
         medium.setOnAction(event -> {
-            initializeBoard("medium");
+            initializeBoard(SudokuUtilities.SudokuLevel.MEDIUM);
+            controller.setDifficulty(SudokuUtilities.SudokuLevel.MEDIUM);
         });
         hard.setOnAction(event -> {
-            initializeBoard("hard");
+            initializeBoard(SudokuUtilities.SudokuLevel.HARD);
+            controller.setDifficulty(SudokuUtilities.SudokuLevel.HARD);
         });
 
         gameMenu.getItems().addAll(newGame, easy, medium, hard);
@@ -217,7 +228,8 @@ public class BoardPane extends GridPane {
         });
 
         restart.setOnAction(event -> {
-            controller.restartGame();  // Call the restart method in the controller
+            initializeBoard(controller.getDifficulty());  // Call the restart method in the controller
+            controller.setDifficulty(controller.getDifficulty());
         });
 
         helpMenu.getItems().addAll(restart, check, about);
@@ -240,7 +252,7 @@ public class BoardPane extends GridPane {
                     if (isHint) {
                         // Disable the cell and change its style to indicate it's locked
                         numberTiles[row][col].setDisable(true);  // Lock the cell (disable interactions)
-                        numberTiles[row][col].setStyle("-fx-background-color: lightgray; -fx-text-fill: black; -fx-border-color: black; -fx-alignment: center;");
+                        numberTiles[row][col].setStyle("-fx-background-color: lightblue; -fx-text-fill: black; -fx-border-color: black; -fx-alignment: center;");
                     }
                 } else {
                     numberTiles[row][col].setText("");  // Clear the cell if the value is 0

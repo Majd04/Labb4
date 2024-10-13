@@ -42,16 +42,6 @@ public class SudokuBoard implements Serializable {
         return true;
     }
 
-    // Method to reset the board to the initial state
-    public void resetBoard() {
-        for (int row = 0; row < 9; row++) {
-            for (int col = 0; col < 9; col++) {
-                board[row][col] = initialBoard[row][col];  // Reset each cell to the initial value
-            }
-        }
-        System.out.println("Board reset to the initial state.");
-    }
-
     public boolean checkPartialSolution() {
         for (int row = 0; row < 9; row++) {
             for (int col = 0; col < 9; col++) {
@@ -82,13 +72,6 @@ public class SudokuBoard implements Serializable {
     }
 
     public void printBoard() {
-/*        for (int row = 0; row < 9; row++) {
-            for (int col = 0; col < 9; col++) {
-                System.out.print(board[row][col] + " ");
-            }
-            System.out.println();
-        }*/
-
         System.out.println("Current Board:");
         for (int row = 0; row < 9; row++) {
             for (int col = 0; col < 9; col++) {

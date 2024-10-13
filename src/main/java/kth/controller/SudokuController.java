@@ -19,6 +19,9 @@ public class SudokuController {
     private Random random = new Random();  // For selecting random empty cells
     private int selectedRow = -1;
     private int selectedCol = -1;
+    private SudokuUtilities.SudokuLevel currentLevel;
+
+
 
 /*    public SudokuController(SudokuBoard board, BoardPane view) {
         this.sudokuBoard = board;
@@ -30,6 +33,7 @@ public class SudokuController {
         int[][][] puzzleAndSolution = SudokuUtilities.generateSudokuMatrix(level);
         int[][] puzzle = new int[9][9];
         int[][] solution = new int[9][9];
+        this.currentLevel = level;
 
         // Dela upp i pussel och lösning
         for (int row = 0; row < 9; row++) {
@@ -43,27 +47,29 @@ public class SudokuController {
         this.boardPane = view;
     }
 
-    public void changeDifficulty(SudokuUtilities.SudokuLevel level) {
-        // Generate a new puzzle and solution for the selected difficulty
-        int[][][] puzzleAndSolution = SudokuUtilities.generateSudokuMatrix(level);
-        int[][] puzzle = new int[9][9];
-        int[][] solution = new int[9][9];
+    public void setDifficulty(SudokuUtilities.SudokuLevel newDifficulty) {
+        // Update the current difficulty
+        this.currentLevel = newDifficulty;
 
-        // Split into puzzle and solution
+        // Generate a new puzzle and solution for the selected difficulty
+        int[][][] puzzleAndSolution = SudokuUtilities.generateSudokuMatrix(newDifficulty);
+        int[][] newPuzzle = new int[9][9];
+        int[][] newSolution = new int[9][9];
+
+        // Extract puzzle and solution
         for (int row = 0; row < 9; row++) {
             for (int col = 0; col < 9; col++) {
-                puzzle[row][col] = puzzleAndSolution[row][col][0];  // Puzzle part
-                solution[row][col] = puzzleAndSolution[row][col][1];  // Solution part
+                newPuzzle[row][col] = puzzleAndSolution[row][col][0];  // Puzzle
+                newSolution[row][col] = puzzleAndSolution[row][col][1];  // Solution
             }
         }
 
-        // Update the model (SudokuBoard)
-        this.sudokuBoard = new SudokuBoard(puzzle, solution);
+        this.sudokuBoard = new SudokuBoard(newPuzzle, newSolution);
 
-        // Update the view (BoardPane) with the new puzzle
-        boardPane.updateBoard(sudokuBoard);  // Update the UI with the new puzzle
+    }
 
-        System.out.println("Difficulty changed to " + level);
+    public SudokuUtilities.SudokuLevel getDifficulty() {
+        return currentLevel;
     }
 
     // Set the currently selected number
@@ -83,21 +89,6 @@ public class SudokuController {
             sudokuBoard.setCellVal(row, col, selectedNumber);  // Update model
             boardPane.updateCell(row, col, selectedNumber, false);    // Update view
         }
-    }
-
-    public void restartGame() {
-        // Reset the board to its initial state (model)
-        sudokuBoard.resetBoard();  // Assuming you have a reset method in SudokuBoard
-
-        // Reset the UI to reflect the initial state
-        for (int row = 0; row < 9; row++) {
-            for (int col = 0; col < 9; col++) {
-                int value = sudokuBoard.getCellVal(row, col);  // Get the reset value from the model
-                boardPane.updateCell(row, col, value, false);  // Update the UI with the reset values
-            }
-        }
-
-        System.out.println("Game restarted.");
     }
 
     // Metod för att rensa den valda cellen
@@ -178,6 +169,8 @@ public class SudokuController {
         // Update the current board with the correct value
         sudokuBoard.setCellVal(row, col, correctValue);  // Update model (logic board)
         boardPane.updateCell(row, col, correctValue, true);    // Update view (UI)
+
+
 
     }
 
