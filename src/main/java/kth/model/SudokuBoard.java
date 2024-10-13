@@ -12,9 +12,9 @@ import java.io.Serializable;
  * @version 1.0
  */
 public class SudokuBoard implements Serializable {
-    private int[][] board;
-    private int[][] boardSolution;
-    private int[][] initialBoard;
+    private final int[][] board;
+    private final int[][] boardSolution;
+    private final int[][] initialBoard;
 
     /**
      * Constructs a new {@code SudokuBoard} with the given puzzle and solution boards.

@@ -34,7 +34,7 @@ public class SudokuUtilities {
             case EASY: representationString = easy; break;
             case MEDIUM: representationString = medium; break;
             case HARD: representationString = hard; break;
-            default: representationString = medium;
+            default: throw new IllegalArgumentException("Invalid difficulty level: " + level);
         }
 
         // Convert the string representation to a 3D matrix

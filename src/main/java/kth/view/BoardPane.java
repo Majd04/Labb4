@@ -22,9 +22,9 @@ import kth.model.SudokuUtilities;
  * @version 1.0
  */
 public class BoardPane extends GridPane {
-    private Label[][] numberTiles = new Label[9][9];
+    private final Label[][] numberTiles = new Label[9][9];
     private SudokuController controller;
-    private VBox controlPanel;
+    private final VBox controlPanel;
     private SudokuBoard sudokuBoard;
     private int[][] puzzle;
     private int[][] initialPuzzle;

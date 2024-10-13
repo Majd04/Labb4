@@ -22,12 +22,12 @@ import java.util.Random;
  */
 public class SudokuController {
     private SudokuBoard sudokuBoard;
-    private BoardPane boardPane;
+    private final BoardPane boardPane;
     private int selectedNumber = 0;
-    private Random random = new Random();
+    private final Random random = new Random();
     private int selectedRow = -1;
     private int selectedCol = -1;
-    private SudokuUtilities.SudokuLevel currentLevel;
+    private final SudokuUtilities.SudokuLevel currentLevel;
 
     /**
      * Constructs a SudokuController with the specified board, view, and difficulty level.
