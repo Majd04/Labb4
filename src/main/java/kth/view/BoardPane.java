@@ -21,9 +21,11 @@ public class BoardPane extends GridPane {
     private SudokuController controller;
     private VBox controlPanel;
     private SudokuBoard sudokuBoard;
+    private int[][] puzzle;
 
-    public BoardPane(SudokuUtilities.SudokuLevel difficulty) {
-        initializeBoard(difficulty);  // Set up the board UI
+    public BoardPane(int[][] puzzle) {
+        this.puzzle = puzzle;
+        initializeBoard(puzzle);  // Set up the board UI
         controlPanel = initializeControlPanel();  // Create the control panel with buttons 1-9 and clear button
     }
 
@@ -32,15 +34,15 @@ public class BoardPane extends GridPane {
         this.controller = controller;
     }
 
-    private void initializeBoard(SudokuUtilities.SudokuLevel difficulty) {
+    public void initializeBoard(int[][] puzzle) {
         this.getChildren().clear();  // Remove all current children from the root GridPane
+        this.puzzle = puzzle;  // Store the puzzle in the instance variable
         // Reset the numberTiles array (UI elements)
         for (int row = 0; row < 9; row++) {
             for (int col = 0; col < 9; col++) {
                 numberTiles[row][col] = null;  // Clear the references to the previous tiles
             }
         }
-
         Font font = Font.font("Monospaced", FontWeight.NORMAL, 20);
 
         // Huvud-GridPane för hela Sudoku-brädet
@@ -50,7 +52,7 @@ public class BoardPane extends GridPane {
         root.setPadding(new Insets(35, 20, 0, 10));
 
         // Välj utgångsläget baserat på svårighetsgraden
-        int[][] puzzle = null;
+        /*int[][] puzzle = null;
         switch (difficulty) {
             case EASY:
                 puzzle = SudokuUtilities.getEasyPuzzle();
@@ -61,7 +63,7 @@ public class BoardPane extends GridPane {
             case HARD:
                 puzzle = SudokuUtilities.getHardPuzzle();
                 break;
-        }
+        }*/
 
         // Skapa 3x3-sektionerna
         for (int sectionRow = 0; sectionRow < 3; sectionRow++) {
@@ -192,16 +194,20 @@ public class BoardPane extends GridPane {
         MenuItem medium = new MenuItem("Medium");
         MenuItem hard = new MenuItem("Hard");
 
+        newGame.setOnAction(event -> {
+           controller.setDifficulty(controller.getDifficulty());
+        });
+
         easy.setOnAction(event -> {
-            initializeBoard(SudokuUtilities.SudokuLevel.EASY);
             controller.setDifficulty(SudokuUtilities.SudokuLevel.EASY);
+           // initializeBoard(SudokuUtilities.SudokuLevel.EASY);
         });
         medium.setOnAction(event -> {
-            initializeBoard(SudokuUtilities.SudokuLevel.MEDIUM);
+            //initializeBoard(SudokuUtilities.SudokuLevel.MEDIUM);
             controller.setDifficulty(SudokuUtilities.SudokuLevel.MEDIUM);
         });
         hard.setOnAction(event -> {
-            initializeBoard(SudokuUtilities.SudokuLevel.HARD);
+            //initializeBoard(SudokuUtilities.SudokuLevel.HARD);
             controller.setDifficulty(SudokuUtilities.SudokuLevel.HARD);
         });
 
@@ -228,8 +234,8 @@ public class BoardPane extends GridPane {
         });
 
         restart.setOnAction(event -> {
-            initializeBoard(controller.getDifficulty());  // Call the restart method in the controller
-            controller.setDifficulty(controller.getDifficulty());
+            initializeBoard(puzzle);  // Call the restart method in the controller
+
         });
 
         helpMenu.getItems().addAll(restart, check, about);

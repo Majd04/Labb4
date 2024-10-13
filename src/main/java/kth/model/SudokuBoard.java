@@ -23,6 +23,15 @@ public class SudokuBoard implements Serializable {
         }
     }
 
+    public void getInitialBoard() {
+        // Reset the board to the initial state
+        for (int row = 0; row < 9; row++) {
+            for (int col = 0; col < 9; col++) {
+                board[row][col] = initialBoard[row][col];  // Reset the board
+            }
+        }
+    }
+
     public void setCellVal(int row, int col, int val) {
         board[row][col] = val;
     }
@@ -49,8 +58,7 @@ public class SudokuBoard implements Serializable {
                 if (currentVal != 0) {  // Only check non-empty cells
                     int correctVal = getSolutionVal(row, col);  // Get the correct solution value
                     if (currentVal != correctVal) {
-                        System.out.println("Incorrect value at [" + row + "][" + col + "]: " +
-                                "Entered = " + currentVal + ", Correct = " + correctVal);
+                        //System.out.println("Incorrect value at [" + row + "][" + col + "]: " + "Entered = " + currentVal + ", Correct = " + correctVal);
                         return false;  // Return false if any filled value is incorrect
                     }
                 }
@@ -91,7 +99,11 @@ public class SudokuBoard implements Serializable {
 
     public int getSolutionVal(int row, int col) {
         int solutionVal = boardSolution[row][col];
-        System.out.println("Solution value at [" + row + "][" + col + "] = " + solutionVal);
+       // System.out.println("Solution value at [" + row + "][" + col + "] = " + solutionVal);
         return solutionVal;
+    }
+
+    public void setSolutionVal(int row, int col, int val) {
+        boardSolution[row][col] = val;
     }
 }

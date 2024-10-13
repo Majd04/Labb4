@@ -47,6 +47,8 @@ public class SudokuController {
         this.boardPane = view;
     }
 
+
+
     public void setDifficulty(SudokuUtilities.SudokuLevel newDifficulty) {
         // Update the current difficulty
         this.currentLevel = newDifficulty;
@@ -66,7 +68,9 @@ public class SudokuController {
 
         this.sudokuBoard = new SudokuBoard(newPuzzle, newSolution);
 
+        this.boardPane.initializeBoard(newPuzzle);
     }
+
 
     public SudokuUtilities.SudokuLevel getDifficulty() {
         return currentLevel;
@@ -111,11 +115,38 @@ public class SudokuController {
         return sudokuBoard;
     }
 
+    public void randomizeBoard() {
+        // Create temporary arrays to hold current board and solution values
+        int[][] tempBoard = new int[9][9];
+        int[][] tempSolution = new int[9][9];
+
+        // Copy current board and solution to temporary arrays
+        for (int row = 0; row < 9; row++) {
+            for (int col = 0; col < 9; col++) {
+                tempBoard[row][col] = sudokuBoard.getCellVal(row, col); // current puzzle value
+                tempSolution[row][col] = sudokuBoard.getSolutionVal(row, col); // solution value
+            }
+        }
+
+        // Swap rows and columns to transpose the board (creating variation)
+        for (int row = 0; row < 9; row++) {
+            for (int col = 0; col < 9; col++) {
+                // Transposing the board
+                sudokuBoard.setCellVal(row, col, tempBoard[col][row]);  // Swap puzzle
+                sudokuBoard.setSolutionVal(row, col, tempSolution[col][row]);  // Swap solution
+            }
+        }
+
+        // Update the UI with the randomized board
+        boardPane.updateBoard(sudokuBoard);
+    }
+
 
 
     // Metod för att kontrollera om lösningen är korrekt
     // Check the solution (full or partial)
     public void checkSolution() {
+        sudokuBoard.printBoard();
         // Check if the board is fully filled
         if (sudokuBoard.allCellsFilled()) {
             // If the board is fully filled, perform a full solution check

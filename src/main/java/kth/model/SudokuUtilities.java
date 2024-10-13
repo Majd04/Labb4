@@ -1,5 +1,7 @@
 package kth.model;
 
+import java.util.Random;
+
 public class SudokuUtilities {
 
     public enum SudokuLevel {EASY, MEDIUM, HARD}
@@ -15,8 +17,6 @@ public class SudokuUtilities {
      * @return A 3-dimensional int matrix.
      * [row][col][0] represents the initial values, zero representing an empty cell.
      * [row][col][1] represents the solution.
-     * @throws IllegalArgumentException if the length of stringRepresentation is not 2*81 characters and
-     *                                  for characters other than '0'-'9'.
      */
     public static int[][][] generateSudokuMatrix(SudokuLevel level) {
         String representationString;
@@ -26,7 +26,74 @@ public class SudokuUtilities {
             case HARD: representationString = hard; break;
             default: representationString = medium;
         }
-        return convertStringToIntMatrix(representationString);
+
+        // Convert the string representation to a 3D matrix
+        int[][][] matrix = convertStringToIntMatrix(representationString);
+
+        // Apply transformations to generate a random variant
+        Random rand = new Random();
+        boolean flipHorizontally = rand.nextBoolean();  // Randomly decide to flip horizontally
+        boolean flipVertically = rand.nextBoolean();    // Randomly decide to flip vertically
+
+        if (flipHorizontally) {
+            flipBoardHorizontally(matrix);
+        }
+        if (flipVertically) {
+            flipBoardVertically(matrix);
+        }
+
+        // Randomly swap numbers (e.g., swap all 1's with 2's)
+        swapRandomNumbers(matrix);
+
+        return matrix;
+    }
+
+    // Flip the Sudoku board horizontally
+    private static void flipBoardHorizontally(int[][][] board) {
+        for (int row = 0; row < GRID_SIZE; row++) {
+            for (int col = 0; col < GRID_SIZE / 2; col++) {
+                for (int z = 0; z < 2; z++) {
+                    int temp = board[row][col][z];
+                    board[row][col][z] = board[row][GRID_SIZE - 1 - col][z];
+                    board[row][GRID_SIZE - 1 - col][z] = temp;
+                }
+            }
+        }
+    }
+
+    // Flip the Sudoku board vertically
+    private static void flipBoardVertically(int[][][] board) {
+        for (int row = 0; row < GRID_SIZE / 2; row++) {
+            for (int col = 0; col < GRID_SIZE; col++) {
+                for (int z = 0; z < 2; z++) {
+                    int temp = board[row][col][z];
+                    board[row][col][z] = board[GRID_SIZE - 1 - row][col][z];
+                    board[GRID_SIZE - 1 - row][col][z] = temp;
+                }
+            }
+        }
+    }
+
+    // Swap all occurrences of two random numbers (e.g., all 1's with 2's)
+    private static void swapRandomNumbers(int[][][] board) {
+        Random rand = new Random();
+        int num1 = rand.nextInt(9) + 1;  // Random number between 1 and 9
+        int num2;
+        do {
+            num2 = rand.nextInt(9) + 1;  // Ensure that num2 is different from num1
+        } while (num1 == num2);
+
+        for (int row = 0; row < GRID_SIZE; row++) {
+            for (int col = 0; col < GRID_SIZE; col++) {
+                for (int z = 0; z < 2; z++) {
+                    if (board[row][col][z] == num1) {
+                        board[row][col][z] = num2;
+                    } else if (board[row][col][z] == num2) {
+                        board[row][col][z] = num1;
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -38,10 +105,7 @@ public class SudokuUtilities {
      * @return A 3-dimensional int matrix.
      * [row][col][0] represents the initial values, zero representing an empty cell.
      * [row][col][1] represents the solution.
-     * @throws IllegalArgumentException if the length of stringRepresentation is not 2*81 characters and
-     *                                  for characters other than '0'-'9'.
      */
-    /*package private*/
     static int[][][] convertStringToIntMatrix(String stringRepresentation) {
         if (stringRepresentation.length() != GRID_SIZE * GRID_SIZE * 2)
             throw new IllegalArgumentException("representation length " + stringRepresentation.length());
@@ -53,16 +117,14 @@ public class SudokuUtilities {
         // initial values
         for (int row = 0; row < GRID_SIZE; row++) {
             for (int col = 0; col < GRID_SIZE; col++) {
-                values[row][col][0] =
-                        convertCharToSudokuInt(charRepresentation[charIndex++]);
+                values[row][col][0] = convertCharToSudokuInt(charRepresentation[charIndex++]);
             }
         }
 
         // solution values
         for (int row = 0; row < GRID_SIZE; row++) {
             for (int col = 0; col < GRID_SIZE; col++) {
-                values[row][col][1] =
-                        convertCharToSudokuInt(charRepresentation[charIndex++]);
+                values[row][col][1] = convertCharToSudokuInt(charRepresentation[charIndex++]);
             }
         }
 
@@ -74,6 +136,7 @@ public class SudokuUtilities {
         return ch - '0';
     }
 
+    // Puzzle data
     private static final String easy =
             "000914070" +
                     "010000054" +
@@ -134,6 +197,7 @@ public class SudokuUtilities {
                     "154873269" +
                     "728196453";
 
+    // Keep the getPuzzle methods
     public static int[][] getPuzzle(String difficulty) {
         int[][] board = new int[9][9];
         String puzzle = difficulty.substring(0, 81);  // Extract the first 81 characters for puzzle
@@ -145,16 +209,29 @@ public class SudokuUtilities {
         return board;
     }
 
+    private static int[][] extractInitialValues(int[][][] matrix) {
+        int[][] initialBoard = new int[GRID_SIZE][GRID_SIZE];
+        for (int row = 0; row < GRID_SIZE; row++) {
+            for (int col = 0; col < GRID_SIZE; col++) {
+                initialBoard[row][col] = matrix[row][col][0];  // Get the initial puzzle values (index 0)
+            }
+        }
+        return initialBoard;
+    }
+
     public static int[][] getEasyPuzzle() {
-        return getPuzzle(easy);
+        int[][][] matrix = generateSudokuMatrix(SudokuLevel.EASY);  // This will randomize the puzzle
+        return extractInitialValues(matrix);  // Extract only the initial values
     }
 
     public static int[][] getMediumPuzzle() {
-        return getPuzzle(medium);
+        int[][][] matrix = generateSudokuMatrix(SudokuLevel.MEDIUM);  // This will randomize the puzzle
+        return extractInitialValues(matrix);  // Extract only the initial values
     }
 
     public static int[][] getHardPuzzle() {
-        return getPuzzle(hard);
+        int[][][] matrix = generateSudokuMatrix(SudokuLevel.HARD);  // This will randomize the puzzle
+        return extractInitialValues(matrix);  // Extract only the initial values
     }
 }
 
