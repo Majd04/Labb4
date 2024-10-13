@@ -22,9 +22,11 @@ public class BoardPane extends GridPane {
     private VBox controlPanel;
     private SudokuBoard sudokuBoard;
     private int[][] puzzle;
+    private int[][] initialPuzzle;
 
     public BoardPane(int[][] puzzle) {
         this.puzzle = puzzle;
+        this.initialPuzzle = deepCopy(puzzle);
         initializeBoard(puzzle);  // Set up the board UI
         controlPanel = initializeControlPanel();  // Create the control panel with buttons 1-9 and clear button
     }
@@ -36,7 +38,7 @@ public class BoardPane extends GridPane {
 
     public void initializeBoard(int[][] puzzle) {
         this.getChildren().clear();  // Remove all current children from the root GridPane
-        this.puzzle = puzzle;  // Store the puzzle in the instance variable
+        this.initialPuzzle = puzzle;  // Store the puzzle in the instance variable
         // Reset the numberTiles array (UI elements)
         for (int row = 0; row < 9; row++) {
             for (int col = 0; col < 9; col++) {
@@ -50,20 +52,6 @@ public class BoardPane extends GridPane {
         root.setGridLinesVisible(false);  // Vi tar bort vanliga gridlines
 
         root.setPadding(new Insets(35, 20, 0, 10));
-
-        // Välj utgångsläget baserat på svårighetsgraden
-        /*int[][] puzzle = null;
-        switch (difficulty) {
-            case EASY:
-                puzzle = SudokuUtilities.getEasyPuzzle();
-                break;
-            case MEDIUM:
-                puzzle = SudokuUtilities.getMediumPuzzle();
-                break;
-            case HARD:
-                puzzle = SudokuUtilities.getHardPuzzle();
-                break;
-        }*/
 
         // Skapa 3x3-sektionerna
         for (int sectionRow = 0; sectionRow < 3; sectionRow++) {
@@ -234,8 +222,7 @@ public class BoardPane extends GridPane {
         });
 
         restart.setOnAction(event -> {
-            initializeBoard(puzzle);  // Call the restart method in the controller
-
+            controller.restartGame();  // Call the restart method in the controller
         });
 
         helpMenu.getItems().addAll(restart, check, about);
@@ -247,18 +234,27 @@ public class BoardPane extends GridPane {
         return menuBar;
     }
 
+    private int[][] deepCopy(int[][] original) {
+        int[][] copy = new int[original.length][];
+        for (int i = 0; i < original.length; i++) {
+            copy[i] = original[i].clone();
+        }
+        return copy;
+    }
+
 
     // Update the cell at (row, col) with a value from the model
     // Assuming you are using Label for the cells
     public void updateCell(int row, int col, int value, boolean isHint) {
         Platform.runLater(() -> {
+            Font font = Font.font("Monospaced", FontWeight.NORMAL, 20);
             if (numberTiles[row][col] != null) {
                 if (value != 0) {
                     numberTiles[row][col].setText(String.valueOf(value));  // Update the value in the UI
                     if (isHint) {
                         // Disable the cell and change its style to indicate it's locked
                         numberTiles[row][col].setDisable(true);  // Lock the cell (disable interactions)
-                        numberTiles[row][col].setStyle("-fx-background-color: lightblue; -fx-text-fill: black; -fx-border-color: black; -fx-alignment: center;");
+                        numberTiles[row][col].setStyle("-fx-font-weight: bold; -fx-background-color: white;-fx-text-fill: black; -fx-border-color: black; -fx-alignment: center;");
                     }
                 } else {
                     numberTiles[row][col].setText("");  // Clear the cell if the value is 0

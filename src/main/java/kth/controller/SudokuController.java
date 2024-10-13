@@ -220,6 +220,11 @@ public class SudokuController {
         }
     }
 
+    public void restartGame(){
+         sudokuBoard.getInitialBoard();
+         boardPane.updateBoard(sudokuBoard);
+    }
+
     public void loadGame(Stage stage) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Open Sudoku Game");
