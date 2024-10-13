@@ -12,34 +12,41 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Random;
 
+/**
+ * Controller class responsible for managing the interaction between the
+ * Sudoku board model and the user interface (view).
+ * It handles user input, updates the model, and reflects changes in the UI.
+ *
+ * @author Majd & Marvin
+ * @version 1.0
+ */
 public class SudokuController {
     private SudokuBoard sudokuBoard;
     private BoardPane boardPane;
     private int selectedNumber = 0;
-    private Random random = new Random();  // For selecting random empty cells
+    private Random random = new Random();
     private int selectedRow = -1;
     private int selectedCol = -1;
     private SudokuUtilities.SudokuLevel currentLevel;
 
-
-
-/*    public SudokuController(SudokuBoard board, BoardPane view) {
-        this.sudokuBoard = board;
-        this.boardPane = view;
-    }*/
-
+    /**
+     * Constructs a SudokuController with the specified board, view, and difficulty level.
+     * Initializes the puzzle and solution based on the provided difficulty.
+     *
+     * @param board the SudokuBoard model
+     * @param view the BoardPane UI component
+     * @param level the difficulty level of the puzzle
+     */
     public SudokuController(SudokuBoard board, BoardPane view, SudokuUtilities.SudokuLevel level) {
-        // Använd SudokuUtilities för att generera pussel och lösning
         int[][][] puzzleAndSolution = SudokuUtilities.generateSudokuMatrix(level);
         int[][] puzzle = new int[9][9];
         int[][] solution = new int[9][9];
         this.currentLevel = level;
 
-        // Dela upp i pussel och lösning
         for (int row = 0; row < 9; row++) {
             for (int col = 0; col < 9; col++) {
-                puzzle[row][col] = puzzleAndSolution[row][col][0];  // Olösta pusslet
-                solution[row][col] = puzzleAndSolution[row][col][1];  // Lösning
+                puzzle[row][col] = puzzleAndSolution[row][col][0];
+                solution[row][col] = puzzleAndSolution[row][col][1];
             }
         }
 
@@ -47,109 +54,98 @@ public class SudokuController {
         this.boardPane = view;
     }
 
-
-
+    /**
+     * Sets the difficulty level of the Sudoku puzzle.
+     * Generates a new puzzle and solution for the selected difficulty level.
+     *
+     * @param newDifficulty the new difficulty level
+     */
     public void setDifficulty(SudokuUtilities.SudokuLevel newDifficulty) {
-        // Update the current difficulty
-        this.currentLevel = newDifficulty;
-
-        // Generate a new puzzle and solution for the selected difficulty
         int[][][] puzzleAndSolution = SudokuUtilities.generateSudokuMatrix(newDifficulty);
         int[][] newPuzzle = new int[9][9];
         int[][] newSolution = new int[9][9];
 
-        // Extract puzzle and solution
         for (int row = 0; row < 9; row++) {
             for (int col = 0; col < 9; col++) {
-                newPuzzle[row][col] = puzzleAndSolution[row][col][0];  // Puzzle
-                newSolution[row][col] = puzzleAndSolution[row][col][1];  // Solution
+                newPuzzle[row][col] = puzzleAndSolution[row][col][0];
+                newSolution[row][col] = puzzleAndSolution[row][col][1];
             }
         }
 
         this.sudokuBoard = new SudokuBoard(newPuzzle, newSolution);
-
         this.boardPane.initializeBoard(newPuzzle);
     }
 
-
+    /**
+     * Returns the current difficulty level.
+     *
+     * @return the current difficulty level
+     */
     public SudokuUtilities.SudokuLevel getDifficulty() {
         return currentLevel;
     }
 
-    // Set the currently selected number
+    /**
+     * Sets the currently selected number to be placed in a Sudoku cell.
+     *
+     * @param number the number selected by the user
+     */
     public void setSelectedNumber(int number) {
         this.selectedNumber = number;
     }
 
+    /**
+     * Returns the currently selected number to be placed in a Sudoku cell.
+     *
+     * @return the selected number
+     */
     public int getSelectedNumber() {
         return selectedNumber;
     }
 
-    // Handle click on a Sudoku cell (row, col)
+    /**
+     * Handles the action when a Sudoku cell is clicked by the user.
+     * If a number is selected, it is placed in the cell at the specified row and column.
+     *
+     * @param row the row index of the clicked cell
+     * @param col the column index of the clicked cell
+     */
     public void handleCellClick(int row, int col) {
         selectedRow = row;
         selectedCol = col;
         if (selectedNumber != 0) {
-            sudokuBoard.setCellVal(row, col, selectedNumber);  // Update model
-            boardPane.updateCell(row, col, selectedNumber, false);    // Update view
+            sudokuBoard.setCellVal(row, col, selectedNumber);
+            boardPane.updateCell(row, col, selectedNumber, false);
         }
     }
 
-    // Metod för att rensa den valda cellen
+    /**
+     * Clears the value in the currently selected cell on the Sudoku board.
+     */
     public void clearSelectedCell() {
         if (selectedRow != -1 && selectedCol != -1) {
-            // Rensa cellen i logiken (modell)
-            sudokuBoard.setCellVal(selectedRow, selectedCol, 0);  // Sätt värdet till 0 (tom cell)
-
-            // Uppdatera UI för att spegla ändringen
-            boardPane.updateCell(selectedRow, selectedCol, 0, false);  // Uppdatera grafiken i cellen
-
-            // Töm den valda cellen (logik och UI)
-            System.out.println("Cleared cell at [" + selectedRow + "][" + selectedCol + "]");
-        } else {
-            System.out.println("No cell selected to clear.");
+            sudokuBoard.setCellVal(selectedRow, selectedCol, 0);
+            boardPane.updateCell(selectedRow, selectedCol, 0, false);
         }
     }
 
+    /**
+     * Returns the current Sudoku board.
+     *
+     * @return the SudokuBoard model
+     */
     public SudokuBoard getSudokuBoard() {
         return sudokuBoard;
     }
 
-    public void randomizeBoard() {
-        // Create temporary arrays to hold current board and solution values
-        int[][] tempBoard = new int[9][9];
-        int[][] tempSolution = new int[9][9];
-
-        // Copy current board and solution to temporary arrays
-        for (int row = 0; row < 9; row++) {
-            for (int col = 0; col < 9; col++) {
-                tempBoard[row][col] = sudokuBoard.getCellVal(row, col); // current puzzle value
-                tempSolution[row][col] = sudokuBoard.getSolutionVal(row, col); // solution value
-            }
-        }
-
-        // Swap rows and columns to transpose the board (creating variation)
-        for (int row = 0; row < 9; row++) {
-            for (int col = 0; col < 9; col++) {
-                // Transposing the board
-                sudokuBoard.setCellVal(row, col, tempBoard[col][row]);  // Swap puzzle
-                sudokuBoard.setSolutionVal(row, col, tempSolution[col][row]);  // Swap solution
-            }
-        }
-
-        // Update the UI with the randomized board
-        boardPane.updateBoard(sudokuBoard);
-    }
-
-
-
-    // Metod för att kontrollera om lösningen är korrekt
-    // Check the solution (full or partial)
+    /**
+     * Checks if the current solution is correct.
+     * If the puzzle is completely filled, it checks if the solution is correct.
+     * Otherwise, it checks the correctness of the partial solution.
+     */
     public void checkSolution() {
         sudokuBoard.printBoard();
-        // Check if the board is fully filled
         if (sudokuBoard.allCellsFilled()) {
-            // If the board is fully filled, perform a full solution check
             if (sudokuBoard.isSolved()) {
                 Alert solvedAlert = new Alert(Alert.AlertType.INFORMATION);
                 solvedAlert.setTitle("Sudoku Solved");
@@ -162,11 +158,8 @@ public class SudokuController {
                 notSolvedAlert.setHeaderText(null);
                 notSolvedAlert.setContentText("There are mistakes in the Sudoku puzzle. Please try again.");
                 notSolvedAlert.showAndWait();
-
-                sudokuBoard.printBoard();  // Print the current and solution boards for debugging
             }
         } else {
-            // If the board is not fully filled, perform a partial solution check
             if (sudokuBoard.checkPartialSolution()) {
                 Alert partialCorrectAlert = new Alert(Alert.AlertType.INFORMATION);
                 partialCorrectAlert.setTitle("Sudoku Progress");
@@ -179,32 +172,30 @@ public class SudokuController {
                 partialIncorrectAlert.setHeaderText(null);
                 partialIncorrectAlert.setContentText("There are mistakes in your current solution. Please try again.");
                 partialIncorrectAlert.showAndWait();
-
-                sudokuBoard.printBoard();  // Print the current and solution boards for debugging
             }
         }
     }
 
+    /**
+     * Provides a hint by filling a randomly selected empty cell with the correct value.
+     */
     public void giveHint() {
         int row, col;
-
-        // Find a random empty cell (i.e., one that has a 0 value)
         do {
-            row = random.nextInt(9);  // Random row index (0-8)
-            col = random.nextInt(9);  // Random column index (0-8)
-        } while (sudokuBoard.getCellVal(row, col) != 0);  // Keep looking until we find an empty cell
+            row = random.nextInt(9);
+            col = random.nextInt(9);
+        } while (sudokuBoard.getCellVal(row, col) != 0);
 
-        // Get the correct value from the solution
         int correctValue = sudokuBoard.getSolutionVal(row, col);
-
-        // Update the current board with the correct value
-        sudokuBoard.setCellVal(row, col, correctValue);  // Update model (logic board)
-        boardPane.updateCell(row, col, correctValue, true);    // Update view (UI)
-
-
-
+        sudokuBoard.setCellVal(row, col, correctValue);
+        boardPane.updateCell(row, col, correctValue, true);
     }
 
+    /**
+     * Saves the current Sudoku game to a file.
+     *
+     * @param stage the current window (Stage) for the FileChooser dialog
+     */
     public void saveGame(Stage stage) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Save Sudoku Game");
@@ -215,16 +206,24 @@ public class SudokuController {
             try {
                 SudokuFileIO.serializeToFile(sudokuBoard, file);
             } catch (IOException e) {
-                e.printStackTrace();  // Hantera fel
+                e.printStackTrace();
             }
         }
     }
 
-    public void restartGame(){
-         sudokuBoard.getInitialBoard();
-         boardPane.updateBoard(sudokuBoard);
+    /**
+     * Restarts the current Sudoku game by resetting the board to its initial state.
+     */
+    public void restartGame() {
+        sudokuBoard.getInitialBoard();
+        boardPane.updateBoard(sudokuBoard);
     }
 
+    /**
+     * Loads a saved Sudoku game from a file.
+     *
+     * @param stage the current window (Stage) for the FileChooser dialog
+     */
     public void loadGame(Stage stage) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Open Sudoku Game");
@@ -234,9 +233,9 @@ public class SudokuController {
         if (file != null) {
             try {
                 sudokuBoard = SudokuFileIO.deSerializeFromFile(file);
-                boardPane.updateBoard(sudokuBoard);  // Uppdatera vyn med laddat bräde
+                boardPane.updateBoard(sudokuBoard);
             } catch (IOException | ClassNotFoundException e) {
-                e.printStackTrace();  // Hantera fel
+                e.printStackTrace();
             }
         }
     }

@@ -2,6 +2,14 @@ package kth.model;
 
 import java.util.Random;
 
+/**
+ * Utility class providing various methods to generate and manipulate
+ * Sudoku puzzles at different difficulty levels. The class also includes
+ * operations to modify the puzzle, such as flipping the board and swapping numbers.
+ *
+ * @author Majd & Marvin
+ * @version 1.0
+ */
 public class SudokuUtilities {
 
     public enum SudokuLevel {EASY, MEDIUM, HARD}
@@ -11,12 +19,14 @@ public class SudokuUtilities {
     public static final int SECTION_SIZE = 3;
 
     /**
-     * Create a 3-dimensional matrix with initial values and solution in Sudoku.
+     * Generates a Sudoku puzzle and its corresponding solution in a 3D matrix format.
+     * The generated puzzle can be modified with random transformations such as
+     * flipping and swapping numbers to introduce variations.
      *
-     * @param level The level, i.e. the difficulty, of the initial standing.
-     * @return A 3-dimensional int matrix.
-     * [row][col][0] represents the initial values, zero representing an empty cell.
-     * [row][col][1] represents the solution.
+     * @param level The difficulty level of the puzzle (EASY, MEDIUM, or HARD).
+     * @return A 3D integer array where:
+     *         - [row][col][0] contains the initial puzzle values, with '0' representing an empty cell.
+     *         - [row][col][1] contains the solved values.
      */
     public static int[][][] generateSudokuMatrix(SudokuLevel level) {
         String representationString;
@@ -30,11 +40,11 @@ public class SudokuUtilities {
         // Convert the string representation to a 3D matrix
         int[][][] matrix = convertStringToIntMatrix(representationString);
 
-        // Apply transformations to generate a random variant
         Random rand = new Random();
-        boolean flipHorizontally = rand.nextBoolean();  // Randomly decide to flip horizontally
-        boolean flipVertically = rand.nextBoolean();    // Randomly decide to flip vertically
+        boolean flipHorizontally = rand.nextBoolean();
+        boolean flipVertically = rand.nextBoolean();
 
+        // Optionally flip the board horizontally or vertically
         if (flipHorizontally) {
             flipBoardHorizontally(matrix);
         }
@@ -42,13 +52,19 @@ public class SudokuUtilities {
             flipBoardVertically(matrix);
         }
 
-        // Randomly swap numbers (e.g., swap all 1's with 2's)
+        // Randomly swap two numbers throughout the board
         swapRandomNumbers(matrix);
 
         return matrix;
     }
 
-    // Flip the Sudoku board horizontally
+    /**
+     * Flips the Sudoku board horizontally, reversing the order of columns in each row.
+     * This transformation affects both the puzzle and its solution.
+     *
+     * @param board The 3D matrix representing the Sudoku puzzle and solution.
+     *              The matrix will be modified in place.
+     */
     private static void flipBoardHorizontally(int[][][] board) {
         for (int row = 0; row < GRID_SIZE; row++) {
             for (int col = 0; col < GRID_SIZE / 2; col++) {
@@ -61,7 +77,13 @@ public class SudokuUtilities {
         }
     }
 
-    // Flip the Sudoku board vertically
+    /**
+     * Flips the Sudoku board vertically, reversing the order of rows.
+     * This transformation affects both the puzzle and its solution.
+     *
+     * @param board The 3D matrix representing the Sudoku puzzle and solution.
+     *              The matrix will be modified in place.
+     */
     private static void flipBoardVertically(int[][][] board) {
         for (int row = 0; row < GRID_SIZE / 2; row++) {
             for (int col = 0; col < GRID_SIZE; col++) {
@@ -74,14 +96,20 @@ public class SudokuUtilities {
         }
     }
 
-    // Swap all occurrences of two random numbers (e.g., all 1's with 2's)
+    /**
+     * Swaps all occurrences of two randomly selected numbers throughout the Sudoku board.
+     * This random transformation ensures that the puzzle remains valid while changing its appearance.
+     *
+     * @param board The 3D matrix representing the Sudoku puzzle and solution.
+     *              The numbers in the matrix will be swapped in place.
+     */
     private static void swapRandomNumbers(int[][][] board) {
         Random rand = new Random();
         int num1 = rand.nextInt(9) + 1;  // Random number between 1 and 9
         int num2;
         do {
-            num2 = rand.nextInt(9) + 1;  // Ensure that num2 is different from num1
-        } while (num1 == num2);
+            num2 = rand.nextInt(9) + 1;
+        } while (num1 == num2);  // Ensure num1 and num2 are different
 
         for (int row = 0; row < GRID_SIZE; row++) {
             for (int col = 0; col < GRID_SIZE; col++) {
@@ -97,31 +125,29 @@ public class SudokuUtilities {
     }
 
     /**
-     * Create a 3-dimensional matrix with initial values and solution in Sudoku.
+     * Converts a string representation of a Sudoku puzzle and its solution into a 3D integer matrix.
+     * The string contains 81 characters representing the puzzle followed by 81 characters representing the solution.
      *
-     * @param stringRepresentation A string of 2*81 characters, 0-9. The first 81 characters represents
-     *                             the initial values, '0' representing an empty cell.
-     *                             The following 81 characters represents the solution.
-     * @return A 3-dimensional int matrix.
-     * [row][col][0] represents the initial values, zero representing an empty cell.
-     * [row][col][1] represents the solution.
+     * @param stringRepresentation A string of exactly 162 characters. The first 81 characters represent
+     *                             the puzzle, where '0' indicates an empty cell. The following 81 characters
+     *                             represent the solution.
+     * @return A 3D integer matrix where:
+     *         - [row][col][0] contains the initial puzzle values (0 represents empty).
+     *         - [row][col][1] contains the corresponding solution values.
      */
     static int[][][] convertStringToIntMatrix(String stringRepresentation) {
         if (stringRepresentation.length() != GRID_SIZE * GRID_SIZE * 2)
-            throw new IllegalArgumentException("representation length " + stringRepresentation.length());
+            throw new IllegalArgumentException("The representation length must be 162 characters.");
 
         int[][][] values = new int[GRID_SIZE][GRID_SIZE][2];
         char[] charRepresentation = stringRepresentation.toCharArray();
 
         int charIndex = 0;
-        // initial values
         for (int row = 0; row < GRID_SIZE; row++) {
             for (int col = 0; col < GRID_SIZE; col++) {
                 values[row][col][0] = convertCharToSudokuInt(charRepresentation[charIndex++]);
             }
         }
-
-        // solution values
         for (int row = 0; row < GRID_SIZE; row++) {
             for (int col = 0; col < GRID_SIZE; col++) {
                 values[row][col][1] = convertCharToSudokuInt(charRepresentation[charIndex++]);
@@ -131,12 +157,19 @@ public class SudokuUtilities {
         return values;
     }
 
+    /**
+     * Converts a character representing a Sudoku digit ('0'-'9') to its corresponding integer value.
+     *
+     * @param ch The character representing a Sudoku digit.
+     * @return The integer value corresponding to the character.
+     * @throws IllegalArgumentException if the character is not between '0' and '9'.
+     */
     private static int convertCharToSudokuInt(char ch) {
-        if (ch < '0' || ch > '9') throw new IllegalArgumentException("character " + ch);
+        if (ch < '0' || ch > '9') throw new IllegalArgumentException("Invalid character: " + ch);
         return ch - '0';
     }
 
-    // Puzzle data
+    // String representations of predefined Sudoku puzzles and their solutions
     private static final String easy =
             "000914070" +
                     "010000054" +
@@ -146,7 +179,7 @@ public class SudokuUtilities {
                     "300100000" +
                     "039000408" +
                     "650800030" +
-                    "000403260" + // solution values after this substring
+                    "000403260" +
                     "583914672" +
                     "712386954" +
                     "946752183" +
@@ -197,41 +230,51 @@ public class SudokuUtilities {
                     "154873269" +
                     "728196453";
 
-    // Keep the getPuzzle methods
-    public static int[][] getPuzzle(String difficulty) {
-        int[][] board = new int[9][9];
-        String puzzle = difficulty.substring(0, 81);  // Extract the first 81 characters for puzzle
-        for (int i = 0; i < puzzle.length(); i++) {
-            int row = i / 9;
-            int col = i % 9;
-            board[row][col] = Character.getNumericValue(puzzle.charAt(i));
-        }
-        return board;
-    }
-
+    /**
+     * Extracts and returns the puzzle values from a 3D Sudoku matrix.
+     * Only the initial puzzle values (not the solution) are returned.
+     *
+     * @param matrix The 3D matrix representing the Sudoku puzzle and solution.
+     * @return A 2D array containing the initial puzzle values.
+     */
     private static int[][] extractInitialValues(int[][][] matrix) {
         int[][] initialBoard = new int[GRID_SIZE][GRID_SIZE];
         for (int row = 0; row < GRID_SIZE; row++) {
             for (int col = 0; col < GRID_SIZE; col++) {
-                initialBoard[row][col] = matrix[row][col][0];  // Get the initial puzzle values (index 0)
+                initialBoard[row][col] = matrix[row][col][0];
             }
         }
         return initialBoard;
     }
 
+    /**
+     * Retrieves a randomly generated Sudoku puzzle at the EASY difficulty level.
+     *
+     * @return A 2D array representing the initial values of the EASY Sudoku puzzle.
+     */
     public static int[][] getEasyPuzzle() {
-        int[][][] matrix = generateSudokuMatrix(SudokuLevel.EASY);  // This will randomize the puzzle
-        return extractInitialValues(matrix);  // Extract only the initial values
+        int[][][] matrix = generateSudokuMatrix(SudokuLevel.EASY);
+        return extractInitialValues(matrix);
     }
 
+    /**
+     * Retrieves a randomly generated Sudoku puzzle at the MEDIUM difficulty level.
+     *
+     * @return A 2D array representing the initial values of the MEDIUM Sudoku puzzle.
+     */
     public static int[][] getMediumPuzzle() {
-        int[][][] matrix = generateSudokuMatrix(SudokuLevel.MEDIUM);  // This will randomize the puzzle
-        return extractInitialValues(matrix);  // Extract only the initial values
+        int[][][] matrix = generateSudokuMatrix(SudokuLevel.MEDIUM);
+        return extractInitialValues(matrix);
     }
 
+    /**
+     * Retrieves a randomly generated Sudoku puzzle at the HARD difficulty level.
+     *
+     * @return A 2D array representing the initial values of the HARD Sudoku puzzle.
+     */
     public static int[][] getHardPuzzle() {
-        int[][][] matrix = generateSudokuMatrix(SudokuLevel.HARD);  // This will randomize the puzzle
-        return extractInitialValues(matrix);  // Extract only the initial values
+        int[][][] matrix = generateSudokuMatrix(SudokuLevel.HARD);
+        return extractInitialValues(matrix);
     }
 }
 

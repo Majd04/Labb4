@@ -1,16 +1,29 @@
 package kth.model;
 
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
 
+/**
+ * The {@code SudokuBoard} class represents the state of the Sudoku puzzle,
+ * including both the current board and the solution board. It provides methods
+ * to manipulate and check the state of the board, such as verifying whether
+ * the puzzle is solved or resetting to its initial state.
+ *
+ * @author Majd & Marvin
+ * @version 1.0
+ */
 public class SudokuBoard implements Serializable {
     private int[][] board;
     private int[][] boardSolution;
     private int[][] initialBoard;
 
+    /**
+     * Constructs a new {@code SudokuBoard} with the given puzzle and solution boards.
+     * The initial state of the puzzle is stored for later reset.
+     *
+     * @param board the initial puzzle board.
+     * @param boardSolution the solution board for the puzzle.
+     */
     public SudokuBoard(int[][] board, int[][] boardSolution) {
-        //board = new int[9][9];
         this.board = board;
         this.boardSolution = boardSolution;
 
@@ -18,28 +31,50 @@ public class SudokuBoard implements Serializable {
         initialBoard = new int[9][9];
         for (int row = 0; row < 9; row++) {
             for (int col = 0; col < 9; col++) {
-                initialBoard[row][col] = board[row][col];  // Save the initial state
+                initialBoard[row][col] = board[row][col];
             }
         }
     }
 
+    /**
+     * Resets the board to its initial state.
+     */
     public void getInitialBoard() {
-        // Reset the board to the initial state
         for (int row = 0; row < 9; row++) {
             for (int col = 0; col < 9; col++) {
-                board[row][col] = initialBoard[row][col];  // Reset the board
+                board[row][col] = initialBoard[row][col];
             }
         }
     }
 
+    /**
+     * Sets the value of a specific cell on the current board.
+     *
+     * @param row the row index of the cell.
+     * @param col the column index of the cell.
+     * @param val the value to set in the cell.
+     */
     public void setCellVal(int row, int col, int val) {
         board[row][col] = val;
     }
 
+    /**
+     * Returns the value of a specific cell on the current board.
+     *
+     * @param row the row index of the cell.
+     * @param col the column index of the cell.
+     * @return the value of the specified cell.
+     */
     public int getCellVal(int row, int col) {
         return board[row][col];
     }
 
+    /**
+     * Checks if the current board matches the solution, indicating whether
+     * the puzzle is solved.
+     *
+     * @return {@code true} if the current board matches the solution, {@code false} otherwise.
+     */
     public boolean isSolved() {
         for (int row = 0; row < 9; row++) {
             for (int col = 0; col < 9; col++) {
@@ -51,34 +86,47 @@ public class SudokuBoard implements Serializable {
         return true;
     }
 
+    /**
+     * Checks if the current board contains correct values for all filled cells
+     * without verifying the entire solution.
+     *
+     * @return {@code true} if all filled cells have the correct values, {@code false} otherwise.
+     */
     public boolean checkPartialSolution() {
         for (int row = 0; row < 9; row++) {
             for (int col = 0; col < 9; col++) {
-                int currentVal = board[row][col];  // Get the value from the current board
-                if (currentVal != 0) {  // Only check non-empty cells
-                    int correctVal = getSolutionVal(row, col);  // Get the correct solution value
+                int currentVal = board[row][col];
+                if (currentVal != 0) {
+                    int correctVal = getSolutionVal(row, col);
                     if (currentVal != correctVal) {
-                        //System.out.println("Incorrect value at [" + row + "][" + col + "]: " + "Entered = " + currentVal + ", Correct = " + correctVal);
-                        return false;  // Return false if any filled value is incorrect
+                        return false;
                     }
                 }
             }
         }
-        return true;  // Return true if all filled values are correct
+        return true;
     }
 
-
+    /**
+     * Checks if all cells on the current board are filled with non-zero values.
+     *
+     * @return {@code true} if all cells are filled, {@code false} otherwise.
+     */
     public boolean allCellsFilled() {
         for (int row = 0; row < 9; row++) {
             for (int col = 0; col < 9; col++) {
-                if (board[row][col] == 0) {  // Check for empty cells
-                    return false;  // Return false if there is at least one empty cell
+                if (board[row][col] == 0) {
+                    return false;
                 }
             }
         }
-        return true;  // All cells are filled
+        return true;
     }
 
+    /**
+     * Prints the current state of the puzzle board and the solution board.
+     * Used for debugging and inspection purposes.
+     */
     public void printBoard() {
         System.out.println("Current Board:");
         for (int row = 0; row < 9; row++) {
@@ -97,12 +145,24 @@ public class SudokuBoard implements Serializable {
         }
     }
 
+    /**
+     * Returns the correct solution value for a specific cell.
+     *
+     * @param row the row index of the cell.
+     * @param col the column index of the cell.
+     * @return the solution value for the specified cell.
+     */
     public int getSolutionVal(int row, int col) {
-        int solutionVal = boardSolution[row][col];
-       // System.out.println("Solution value at [" + row + "][" + col + "] = " + solutionVal);
-        return solutionVal;
+        return boardSolution[row][col];
     }
 
+    /**
+     * Sets the solution value for a specific cell.
+     *
+     * @param row the row index of the cell.
+     * @param col the column index of the cell.
+     * @param val the solution value to set.
+     */
     public void setSolutionVal(int row, int col, int val) {
         boardSolution[row][col] = val;
     }
