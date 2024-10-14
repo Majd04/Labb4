@@ -27,7 +27,7 @@ public class SudokuController {
     private final Random random = new Random();
     private int selectedRow = -1;
     private int selectedCol = -1;
-    private final SudokuUtilities.SudokuLevel currentLevel;
+    private final SudokuUtilities.SudokuLevel  currentLevel;
 
     /**
      * Constructs a SudokuController with the specified board, view, and difficulty level.
@@ -215,7 +215,7 @@ public class SudokuController {
      * Restarts the current Sudoku game by resetting the board to its initial state.
      */
     public void restartGame() {
-        sudokuBoard.getInitialBoard();
+        sudokuBoard.resetToInitialBoard();
         boardPane.updateBoard(sudokuBoard);
     }
 

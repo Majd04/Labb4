@@ -1,11 +1,9 @@
 package kth.model;
 
-import java.util.Random;
-
 /**
  * Utility class providing various methods to generate and manipulate
- * Sudoku puzzles at different difficulty levels. The class also includes
- * operations to modify the puzzle, such as flipping the board and swapping numbers.
+ * Sudoku puzzles at different difficulty levels. It delegates random transformations
+ * to {@code SudokuRandomizer}.
  *
  * @author Majd & Marvin
  * @version 1.0
@@ -40,88 +38,10 @@ public class SudokuUtilities {
         // Convert the string representation to a 3D matrix
         int[][][] matrix = convertStringToIntMatrix(representationString);
 
-        Random rand = new Random();
-        boolean flipHorizontally = rand.nextBoolean();
-        boolean flipVertically = rand.nextBoolean();
-
-        // Optionally flip the board horizontally or vertically
-        if (flipHorizontally) {
-            flipBoardHorizontally(matrix);
-        }
-        if (flipVertically) {
-            flipBoardVertically(matrix);
-        }
-
-        // Randomly swap two numbers throughout the board
-        swapRandomNumbers(matrix);
+        // Delegate random transformations to the SudokuRandomizer
+        SudokuRandomizer.randomizeBoard(matrix);
 
         return matrix;
-    }
-
-    /**
-     * Flips the Sudoku board horizontally, reversing the order of columns in each row.
-     * This transformation affects both the puzzle and its solution.
-     *
-     * @param board The 3D matrix representing the Sudoku puzzle and solution.
-     *              The matrix will be modified in place.
-     */
-    private static void flipBoardHorizontally(int[][][] board) {
-        for (int row = 0; row < GRID_SIZE; row++) {
-            for (int col = 0; col < GRID_SIZE / 2; col++) {
-                for (int z = 0; z < 2; z++) {
-                    int temp = board[row][col][z];
-                    board[row][col][z] = board[row][GRID_SIZE - 1 - col][z];
-                    board[row][GRID_SIZE - 1 - col][z] = temp;
-                }
-            }
-        }
-    }
-
-    /**
-     * Flips the Sudoku board vertically, reversing the order of rows.
-     * This transformation affects both the puzzle and its solution.
-     *
-     * @param board The 3D matrix representing the Sudoku puzzle and solution.
-     *              The matrix will be modified in place.
-     */
-    private static void flipBoardVertically(int[][][] board) {
-        for (int row = 0; row < GRID_SIZE / 2; row++) {
-            for (int col = 0; col < GRID_SIZE; col++) {
-                for (int z = 0; z < 2; z++) {
-                    int temp = board[row][col][z];
-                    board[row][col][z] = board[GRID_SIZE - 1 - row][col][z];
-                    board[GRID_SIZE - 1 - row][col][z] = temp;
-                }
-            }
-        }
-    }
-
-    /**
-     * Swaps all occurrences of two randomly selected numbers throughout the Sudoku board.
-     * This random transformation ensures that the puzzle remains valid while changing its appearance.
-     *
-     * @param board The 3D matrix representing the Sudoku puzzle and solution.
-     *              The numbers in the matrix will be swapped in place.
-     */
-    private static void swapRandomNumbers(int[][][] board) {
-        Random rand = new Random();
-        int num1 = rand.nextInt(9) + 1;  // Random number between 1 and 9
-        int num2;
-        do {
-            num2 = rand.nextInt(9) + 1;
-        } while (num1 == num2);  // Ensure num1 and num2 are different
-
-        for (int row = 0; row < GRID_SIZE; row++) {
-            for (int col = 0; col < GRID_SIZE; col++) {
-                for (int z = 0; z < 2; z++) {
-                    if (board[row][col][z] == num1) {
-                        board[row][col][z] = num2;
-                    } else if (board[row][col][z] == num2) {
-                        board[row][col][z] = num1;
-                    }
-                }
-            }
-        }
     }
 
     /**

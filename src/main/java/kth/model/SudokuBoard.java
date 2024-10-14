@@ -12,26 +12,28 @@ import java.io.Serializable;
  * @version 1.0
  */
 public class SudokuBoard implements Serializable {
-    private final int[][] board;
+    private final SudokuCell[][] board;
     private final int[][] boardSolution;
-    private final int[][] initialBoard;
+    private final SudokuCell[][] initialBoard;
 
     /**
      * Constructs a new {@code SudokuBoard} with the given puzzle and solution boards.
      * The initial state of the puzzle is stored for later reset.
      *
-     * @param board the initial puzzle board.
+     * @param board the initial puzzle board as a 2D array of integers.
      * @param boardSolution the solution board for the puzzle.
      */
     public SudokuBoard(int[][] board, int[][] boardSolution) {
-        this.board = board;
         this.boardSolution = boardSolution;
 
-        // Create a copy of the initial board to reset later
-        initialBoard = new int[9][9];
+        // Initialize the current board and the initial board with SudokuCell objects
+        this.board = new SudokuCell[9][9];
+        this.initialBoard = new SudokuCell[9][9];
         for (int row = 0; row < 9; row++) {
             for (int col = 0; col < 9; col++) {
-                initialBoard[row][col] = board[row][col];
+                boolean editable = board[row][col] == 0; // If the value is 0, it's editable
+                this.board[row][col] = new SudokuCell(board[row][col], editable);
+                this.initialBoard[row][col] = new SudokuCell(board[row][col], editable);
             }
         }
     }
@@ -39,12 +41,29 @@ public class SudokuBoard implements Serializable {
     /**
      * Resets the board to its initial state.
      */
-    public void getInitialBoard() {
+    public void resetToInitialBoard() {
         for (int row = 0; row < 9; row++) {
             for (int col = 0; col < 9; col++) {
-                board[row][col] = initialBoard[row][col];
+                board[row][col].setValue(initialBoard[row][col].getValue());
+                board[row][col].setEditable(initialBoard[row][col].isEditable());
             }
         }
+    }
+
+    /**
+     * Returns the initial state of the board as a 2D array of integers.
+     * This method is useful when you need to get the initial puzzle state without resetting the board.
+     *
+     * @return a 2D array representing the initial state of the board.
+     */
+    public int[][] getInitialBoard() {
+        int[][] initialBoardValues = new int[9][9];
+        for (int row = 0; row < 9; row++) {
+            for (int col = 0; col < 9; col++) {
+                initialBoardValues[row][col] = initialBoard[row][col].getValue();
+            }
+        }
+        return initialBoardValues;
     }
 
     /**
@@ -55,7 +74,7 @@ public class SudokuBoard implements Serializable {
      * @param val the value to set in the cell.
      */
     public void setCellVal(int row, int col, int val) {
-        board[row][col] = val;
+        board[row][col].setValue(val);
     }
 
     /**
@@ -66,7 +85,7 @@ public class SudokuBoard implements Serializable {
      * @return the value of the specified cell.
      */
     public int getCellVal(int row, int col) {
-        return board[row][col];
+        return board[row][col].getValue();
     }
 
     /**
@@ -78,7 +97,7 @@ public class SudokuBoard implements Serializable {
     public boolean isSolved() {
         for (int row = 0; row < 9; row++) {
             for (int col = 0; col < 9; col++) {
-                if (board[row][col] != boardSolution[row][col]) {
+                if (board[row][col].getValue() != boardSolution[row][col]) {
                     return false;
                 }
             }
@@ -95,16 +114,16 @@ public class SudokuBoard implements Serializable {
     public boolean checkPartialSolution() {
         for (int row = 0; row < 9; row++) {
             for (int col = 0; col < 9; col++) {
-                int currentVal = board[row][col];
-                if (currentVal != 0) {
-                    int correctVal = getSolutionVal(row, col);
+                int currentVal = board[row][col].getValue();  // Get the value from the current board
+                if (currentVal != 0) {  // Only check non-empty cells
+                    int correctVal = getSolutionVal(row, col);  // Get the correct solution value
                     if (currentVal != correctVal) {
-                        return false;
+                        return false;  // Return false if any filled value is incorrect
                     }
                 }
             }
         }
-        return true;
+        return true;  // Return true if all filled values are correct
     }
 
     /**
@@ -115,12 +134,12 @@ public class SudokuBoard implements Serializable {
     public boolean allCellsFilled() {
         for (int row = 0; row < 9; row++) {
             for (int col = 0; col < 9; col++) {
-                if (board[row][col] == 0) {
-                    return false;
+                if (board[row][col].getValue() == 0) {  // Check for empty cells
+                    return false;  // Return false if there is at least one empty cell
                 }
             }
         }
-        return true;
+        return true;  // All cells are filled
     }
 
     /**
@@ -131,7 +150,7 @@ public class SudokuBoard implements Serializable {
         System.out.println("Current Board:");
         for (int row = 0; row < 9; row++) {
             for (int col = 0; col < 9; col++) {
-                System.out.print(board[row][col] + " ");
+                System.out.print(board[row][col].getValue() + " ");
             }
             System.out.println();
         }
