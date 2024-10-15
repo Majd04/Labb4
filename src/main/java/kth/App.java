@@ -20,12 +20,9 @@ public class App extends Application {
     @Override
     public void start(Stage primaryStage) {
 
-        // Välj en svårighetsgrad (easy, medium, hard)
         SudokuUtilities.SudokuLevel difficultyLevel = SudokuUtilities.SudokuLevel.EASY;  // Du kan ändra baserat på användarval
 
 
-
-        // Generera pussel och lösning för vald svårighetsgrad
         int[][][] puzzleAndSolution = SudokuUtilities.generateSudokuMatrix(difficultyLevel);
         int[][] puzzle = new int[9][9];
         int[][] solution = new int[9][9];
@@ -38,13 +35,10 @@ public class App extends Application {
             }
         }
 
-        // Skapa modellen (SudokuBoard) med både pussel och lösning
         SudokuBoard sudokuBoard = new SudokuBoard(puzzle, solution);
 
-        // Skapa vyn och ange pusslet
         BoardPane boardPane = new BoardPane(puzzle);
 
-        // Skapa kontrollern och länka modellen och vyn
         SudokuController controller = new SudokuController(sudokuBoard, boardPane, difficultyLevel);
         boardPane.setController(controller);
         controller.setDifficulty(difficultyLevel);
